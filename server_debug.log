@@ -1,0 +1,68 @@
+🚀 Starting Production-Ready Maze Captcha System with Rate Limiting
+📚 Learned from 0 human patterns
+🛡️  Rate limiting enabled with thresholds:
+   - General requests: 60/min
+   - Captcha requests: 30/min
+   - Failed attempts threshold: 5
+🌐 Available at: http://127.0.0.1:8080
+📊 Analytics: http://127.0.0.1:8080/api/analytics
+ * Serving Flask app 'production_maze_captcha'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [14/Jan/2026 23:03:13] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:19] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:29] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:39] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:49] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:54] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:54] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:54] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:56] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:56] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:03:59] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:04] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:04] "GET /api/captcha HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:06] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:07] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:07] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:07] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:12] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [14/Jan/2026 23:04:14] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:19] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:24] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:26] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:29] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:34] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:39] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:44] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:49] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:04:54] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:04] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:14] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:24] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:34] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:44] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:05:54] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:04] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [14/Jan/2026 23:06:14] "GET /api/analytics HTTP/1.1" 200 -

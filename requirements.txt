@@ -1,0 +1,19 @@
+# Production-Ready Maze Captcha System Dependencies
+
+# Core Framework
+flask==3.1.2
+gunicorn==23.0.0
+
+# Image Processing & Computer Vision
+opencv-python==4.12.0.88
+numpy==2.4.1
+
+# Security (optional, for production SSL)
+cryptography==43.0.3
+
+# Development and Testing (optional)
+pytest==8.3.3
+requests==2.32.3
+
+# Monitoring (optional)
+prometheus-client==0.21.0
