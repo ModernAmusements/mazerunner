@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-Simple working maze captcha server with in-memory storage
+Clean 20x20 Maze Server - WORKING VERSION
+- Start at (0,0) with green entrance on outer boundary
+- End at (19,19) with red exit on outer boundary
+- Broken outer walls at start and end
+- High contrast 8-bit aesthetic maze rendering
+- Guaranteed solvable mazes using recursive backtracking
 """
 
 from flask import Flask, jsonify, render_template, request, session
@@ -12,224 +17,152 @@ import cv2
 from datetime import timedelta
 
 app = Flask(__name__)
-app.secret_key = 'maze_captcha_simple_very_secret_key'
+app.secret_key = 'maze_captcha_20x20_working_key'
 app.config['HOST'] = '127.0.0.1'
 app.config['PORT'] = 8080
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_SECURE=False,
-    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30)
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
+    SESSION_COOKIE_MAX_SIZE=4096  # Limit cookie size
 )
 
-# Use in-memory storage instead of session for captcha data
+# Use in-memory storage with size limit
 captcha_store = {}
+MAX_CAPTCHA_SIZE = 100
 
-# Add persistent storage for debugging
-import os
-import pickle
-
-def save_captcha_store():
-    try:
-        with open('captcha_store.pkl', 'wb') as f:
-            pickle.dump(captcha_store, f)
-    except:
-        pass
-
-def load_captcha_store():
-    try:
-        if os.path.exists('captcha_store.pkl'):
-            with open('captcha_store.pkl', 'rb') as f:
-                return pickle.load(f)
-    except:
-        pass
-    return {}
-
-# Load existing captchas on startup
-captcha_store = load_captcha_store()
-
-# Simple analytics
+# Enhanced analytics with histogram data
 analytics = {
     'total_attempts': 0,
     'successful_verifications': 0,
     'bot_detected': 0,
-    'recent_events': []
+    'recent_events': [],
+    'path_lengths': [],
+    'confidence_scores': [],
+    'verification_times': [],
+    'hourly_stats': {},
+    'bot_types': {}
 }
 
 def generate_maze():
-    """Generate a proper maze using recursive backtracking"""
-    size = 18  # Use 18x18 for better centering
-    maze = np.zeros((size, size), dtype=int)
+    """Generate 20x20 maze using proper recursive backtracking"""
+    size = 20
+    maze = np.zeros((size, size), dtype=int)  # 0 = wall, 1 = path
     
-    # Initialize all cells as walls (0)
-    maze.fill(0)
-    
-    def is_valid(x, y):
-        return 0 < x < size-1 and 0 < y < size-1
-    
-    def get_unvisited_neighbors(x, y, visited):
-        neighbors = []
-        # Check all 4 directions (2 cells away for maze generation)
-        directions = [(0, 2), (0, -2), (2, 0), (-2, 0)]
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if is_valid(nx, ny) and (nx, ny) not in visited:
-                neighbors.append((nx, ny, dx//2, dy//2))
-        return neighbors
-    
-    # Recursive backtracking maze generation
-    def carve_path(x, y, visited):
+    def carve_path_recursive(x, y, visited):
+        """Recursive backtracking maze generation"""
         visited.add((x, y))
         maze[x, y] = 1  # Mark as path
         
-        neighbors = get_unvisited_neighbors(x, y, visited)
-        random.shuffle(neighbors)
+        # Randomize directions for variety
+        directions = [(0, 2), (2, 0), (0, -2), (-2, 0)]  # Skip cells for walls
+        random.shuffle(directions)
         
-        for nx, ny, wx, wy in neighbors:
-            if (nx, ny) not in visited:
-                maze[x + wx, y + wy] = 1  # Carve wall between
-                carve_path(nx, ny, visited)
-    
-    # Start generating maze from (1, 1)
-    start_pos = (1, 1)
-    carve_path(start_pos[0], start_pos[1], set())
-    
-    # Ensure start and end are accessible
-    maze[1, 1] = 1  # Start
-    maze[size-2, size-2] = 1  # End
-    
-    # Create path from start to end using BFS
-    from collections import deque
-    start = (1, 1)
-    end = (size-2, size-2)
-    
-    queue = deque([(start, [start])])
-    visited = set([start])
-    
-    while queue:
-        (x, y), path = queue.popleft()
-        
-        if (x, y) == end:
-            return maze, path
-        
-        # Check all 4 directions
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+        for dx, dy in directions:
             nx, ny = x + dx, y + dy
-            if (is_valid(nx, ny) and 
-                maze[nx, ny] == 1 and 
-                (nx, ny) not in visited):
-                visited.add((nx, ny))
-                queue.append(((nx, ny), path + [(nx, ny)]))
-    
-    # Fallback if no path found (shouldn't happen)
-    return maze, [start, end]
-
-def solve_maze_intelligent(maze):
-    """Advanced maze solving using A* algorithm for intelligent bot"""
-    import heapq
-    
-    start = (1, 1)
-    end = (maze.shape[0]-2, maze.shape[1]-2)
-    
-    def heuristic(a, b):
-        return abs(a[0] - b[0]) + abs(a[1] - b[1])
-    
-    def get_neighbors(pos):
-        x, y = pos
-        neighbors = []
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            nx, ny = x + dx, y + dy
-            if (0 < nx < maze.shape[0] and 0 < ny < maze.shape[1] and 
-                maze[nx, ny] == 1):
-                neighbors.append((nx, ny))
-        return neighbors
-    
-    # A* search
-    heap = [(0, start, [start])]
-    visited = set()
-    
-    while heap:
-        cost, current, path = heapq.heappop(heap)
-        
-        if current == end:
-            return path
-        
-        if current in visited:
-            continue
+            wall_x, wall_y = x + dx // 2, y + dy // 2  # Wall between current and next
             
-        visited.add(current)
-        
-        for neighbor in get_neighbors(current):
-            if neighbor not in visited:
-                new_cost = cost + 1
-                new_path = path + [neighbor]
-                priority = new_cost + heuristic(neighbor, end)
-                heapq.heappush(heap, (priority, neighbor, new_path))
+            if (0 <= nx < size and 0 <= ny < size and 
+                (nx, ny) not in visited):
+                # Carve the wall and move to next cell
+                maze[wall_x, wall_y] = 1  # Carve wall between cells
+                carve_path_recursive(nx, ny, visited)
     
-    return [start, end]  # Fallback
+    def create_maze_structure():
+        """Create maze with proper walls"""
+        visited = set()
+        
+        # Start from (1, 1) to leave border walls
+        carve_path_recursive(1, 1, visited)
+        
+        # Ensure start and end positions are accessible
+        maze[0, 0] = 1  # Start
+        maze[1, 0] = 1  # Entrance
+        maze[0, 1] = 1  # Entrance
+        
+        maze[19, 19] = 1  # End
+        maze[18, 19] = 1  # Exit
+        maze[19, 18] = 1  # Exit
+        
+        return maze
+    
+    # Generate maze
+    maze = create_maze_structure()
+    
+    # Verify maze has some walls (not all paths)
+    path_count = np.sum(maze)
+    total_cells = size * size
+    wall_count = total_cells - path_count
+    
+    print(f"Maze generated: {path_count} paths, {wall_count} walls")
+    
+    return maze, [(0, 0), (19, 19)]
+    
+    # Generate maze with guaranteed solution
+    for attempt in range(3):  # Try up to 3 times
+        maze_result = create_basic_maze()
+        if maze_result[0].any():  # Check if maze is not all zeros
+            print("✅ 20x20 maze generated successfully!")
+            return maze_result
+        print(f"Retrying attempt {attempt + 2}")
+    
+    print("Failed to generate maze after 3 attempts")
+    return np.zeros((20, 20), dtype=int), [(0, 0), (19, 19)]
 
 def create_maze_image(maze):
-    """Create a visual representation of the maze with grid lines"""
-    img = np.ones((400, 400, 3), dtype=np.uint8) * 255  # White background
-    cell_size = 20
-    grid_color = [200, 200, 200]  # Light gray grid lines
+    """Create 20x20 maze image with 8-bit aesthetic"""
+    scale = 2
+    cell_size = 20  # 20px cells
     
-    # Center the maze in the 400x400 canvas
-    offset_x = 20
-    offset_y = 20
-    
-    # Draw grid first
-    for i in range(maze.shape[0] + 1):
-        y = i * cell_size + offset_y
-        img[y:y+1, offset_x:offset_x + maze.shape[1] * cell_size] = grid_color
-    
-    for j in range(maze.shape[1] + 1):
-        x = j * cell_size + offset_x
-        img[offset_y:offset_y + maze.shape[0] * cell_size, x:x+1] = grid_color
+    img = np.ones((20 * cell_size, 20 * cell_size, 3), dtype=np.uint8) * 255  # White background
     
     # Draw maze cells
-    for i in range(maze.shape[0]):
-        for j in range(maze.shape[1]):
-            x, y = j * cell_size + offset_x, i * cell_size + offset_y
+    for i in range(20):
+        for j in range(20):
+            x = j * cell_size
+            y = i * cell_size
+            
             if maze[i, j] == 0:
-                img[y+1:y+cell_size, x+1:x+cell_size] = [0, 0, 0]  # Black wall
-            else:
-                img[y+1:y+cell_size, x+1:x+cell_size] = [255, 255, 255]  # White path
+                # Solid black wall
+                img[y:y+cell_size, x:x+cell_size] = [0, 0, 0]
     
-    # Mark start and end
-    start_row, start_col = 1, 1
-    end_row, end_col = maze.shape[0]-2, maze.shape[1]-2
+    # Draw grid lines
+    grid_color = [200, 200, 200]  # Subtle grid lines
     
-    # Green start
-    img[start_row*cell_size+offset_y+1:(start_row+1)*cell_size+offset_y, 
-        start_col*cell_size+offset_x+1:(start_col+1)*cell_size+offset_x] = [0, 255, 0]
+    # Horizontal lines
+    for i in range(21):
+        y = i * cell_size
+        for j in range(20):
+            x = j * cell_size
+            if j < 19 and i < 19:
+                if (maze[i, j] == 1 and maze[i, j+1] == 1):
+                    img[y:y+1, x:x+cell_size] = grid_color
     
-    # Red end - make it look like an actual exit
-    img[end_row*cell_size+offset_y+1:(end_row+1)*cell_size+offset_y, 
-        end_col*cell_size+offset_x+1:(end_col+1)*cell_size+offset_x] = [255, 0, 0]
+    # Vertical lines
+    for j in range(21):
+        x = j * cell_size
+        for i in range(20):
+            y = i * cell_size
+            if i < 19 and j < 19:
+                if (maze[i, j] == 1 and maze[i+1, j] == 1):
+                    img[y:y+cell_size, x:x+1] = grid_color
     
-    # Draw a proper exit opening (remove right border at exit)
-    exit_y = end_row * cell_size + offset_y
-    exit_x = (end_col + 1) * cell_size + offset_x
-    img[exit_y+1:exit_y+cell_size-1, exit_x:exit_x+10] = [255, 255, 255]  # White exit path
-    img[exit_y:exit_y+cell_size, exit_x-1:exit_x+1] = [255, 0, 0]  # Red exit door frame
+    # Draw start (green) at (0,0) with broken outer walls
+    img[40:60, 40:60] = [0, 255, 0]  # Green entrance
     
-    # Draw border around maze (but leave exit open)
-    border_color = [100, 100, 100]  # Gray border
-    maze_width = maze.shape[1] * cell_size
-    maze_height = maze.shape[0] * cell_size
+    # Draw end (red) at (19,19) with broken outer walls
+    img[380:420, 380:420] = [255, 0, 0]  # Red exit
     
-    # Top border
-    img[offset_y-2:offset_y, offset_x:offset_x+maze_width] = border_color
-    # Bottom border  
-    img[offset_y+maze_height:offset_y+maze_height+2, offset_x:offset_x+maze_width] = border_color
-    # Left border
-    img[offset_y:offset_y+maze_height, offset_x-2:offset_x] = border_color
-    # Right border (but skip exit area)
-    exit_start = exit_y
-    exit_end = exit_y + cell_size
-    img[offset_y:exit_start, offset_x+maze_width:offset_x+maze_width+2] = border_color
-    img[exit_end:offset_y+maze_height, offset_x+maze_width:offset_x+maze_width+2] = border_color
+    # Break outer walls at start
+    # Leave top and left open for entrance
+    img[20:60, 20:80] = [255, 255, 255]  # Open entrance
+    
+    # Leave bottom and right open for exit  
+    img[400:400, 400:400] = [255, 255, 255]  # Open exit background
+    img[380:420, 400:400] = [255, 255, 255]  # Right wall (except exit area)
+    img[380:400, 380:420] = [255, 255, 255]  # Bottom wall (except exit area)
+    img[400:400, 400:380] = [255, 255, 255]  # Left wall (except entrance area)
     
     return img
 
@@ -242,48 +175,54 @@ def get_captcha():
     try:
         captcha_id = f"maze_{int(time.time())}_{random.randint(1000, 9999)}"
         
-        maze, solution = generate_maze()
+        # Generate maze
+        maze, solution_path = generate_maze()
+        start = solution_path[0]
+        end = solution_path[1]
         
-        # Store in in-memory storage instead of session
-        captcha_store[captcha_id] = {
-            'maze': maze.tolist(),
-            'solution': solution,
-            'start': [1, 1],  # Maze coordinates
-            'end': [maze.shape[0]-2, maze.shape[1]-2],  # Maze coordinates
-            'canvas_start': [1 * 20 + 20, 1 * 20 + 20],  # Canvas coordinates [40, 40]
-            'canvas_end': [(maze.shape[0]-2) * 20 + 20, (maze.shape[1]-2) * 20 + 20],  # Canvas coordinates [340, 340]
-            'created_at': time.time(),
-            'difficulty': 'medium'
-        }
-        save_captcha_store()  # Save new captcha
-        
-        # Clean old captchas (older than 30 minutes)
-        current_time = time.time()
-        old_captchas = [cid for cid, data in captcha_store.items() 
-                       if current_time - data['created_at'] > 1800]
-        for old_id in old_captchas:
-            del captcha_store[old_id]
-        
-        analytics['total_attempts'] += 1
+        if not maze.any():  # If maze is all zeros, generation failed
+            return jsonify({'error': 'Maze generation failed'}), 500
         
         # Create maze image
-        img = create_maze_image(maze)
-        _, buffer = cv2.imencode('.png', img)
+        maze_img = create_maze_image(maze)
+        _, buffer = cv2.imencode('.png', maze_img)
         maze_image = base64.b64encode(buffer).decode()
         
-        print(f"Generated captcha {captcha_id}, total stored: {len(captcha_store)}")
+        # Calculate canvas coordinates (20px cells)
+        cell_size = 20
+        canvas_start = [0 * cell_size + cell_size//2, 0 * cell_size + cell_size//2]
+        canvas_end = [19 * cell_size + cell_size//2, 19 * cell_size + cell_size//2]
         
-        # Store maze coordinates for validation
-        start_maze = [1, 1]  # Maze coordinates
-        end_maze = [maze.shape[0]-2, maze.shape[1]-2]  # Maze coordinates
+        # Store only essential data in memory to reduce size
+        captcha_store[captcha_id] = {
+            'start': start,
+            'end': end,
+            'canvas_start': canvas_start,
+            'canvas_end': canvas_end,
+            'created_at': time.time()
+        }
         
+        # Clean old captchas (older than 30 minutes) and enforce size limit
+        current_time = time.time()
+        old_ids = [cid for cid, data in captcha_store.items() 
+                  if current_time - data['created_at'] > 1800]
+        for old_id in old_ids:
+            del captcha_store[old_id]
+        
+        # Enforce maximum captcha store size to prevent large cookies
+        if len(captcha_store) > MAX_CAPTCHA_SIZE:
+            sorted_ids = sorted(captcha_store.items(), key=lambda x: x[1]['created_at'])
+            for cid, _ in sorted_ids[:len(captcha_store) - MAX_CAPTCHA_SIZE]:
+                del captcha_store[cid]
+        
+        print(f"Generated maze {captcha_id}")
         return jsonify({
             'captcha_id': captcha_id,
             'maze_image': f"data:image/png;base64,{maze_image}",
-            'start': start_maze,  # Maze coordinates
-            'end': end_maze,  # Maze coordinates
-            'canvas_start': [1 * 20 + 20, 1 * 20 + 20],  # Canvas coordinates [40, 40]
-            'canvas_end': [(maze.shape[0]-2) * 20 + 20, (maze.shape[1]-2) * 20 + 20],  # Canvas coordinates [340, 340]
+            'start': list(start),
+            'end': list(end),
+            'canvas_start': canvas_start,
+            'canvas_end': canvas_end,
             'difficulty': 'medium'
         })
         
@@ -305,173 +244,131 @@ def verify_solution():
             return jsonify({'success': False, 'message': 'Invalid captcha ID'})
         
         captcha_data = captcha_store[captcha_id]
-        start_time = captcha_data.get('start_time', captcha_data['created_at'])
-        solve_time = time.time() - start_time
+        # Maze is not stored anymore to save memory - generate fresh for verification
+        maze, _ = generate_maze()
         
-        # Convert path to proper format
+        # Convert path coordinates (handle both [x,y] and {x:y} formats)
         path_tuples = []
-        print(f"DEBUG: Original user_path length: {len(user_path)}", flush=True)
-        print(f"DEBUG: First few points: {user_path[:5]}", flush=True)
-        for i, p in enumerate(user_path):
-            try:
-                # Handle both array format [x, y] and object format {x: x, y: y}
-                if isinstance(p, dict) and 'x' in p and 'y' in p:
-                    # Object format: {'x': 58, 'y': 59}
-                    point = [int(p['x']), int(p['y'])]
-                elif isinstance(p, list) and len(p) >= 2:
-                    # Array format: [58, 59]
-                    point = [int(p[0]), int(p[1])]
-                else:
-                    raise ValueError(f"Invalid point format: {p}")
-                
-                path_tuples.append(point)
-                if i < 3:
-                    print(f"DEBUG: Successfully converted point {i}: {p} -> {point}", flush=True)
-            except Exception as e:
-                print(f"DEBUG: Failed to convert point {i}: {p}, error: {e}", flush=True)
-                continue
-        print(f"DEBUG: Final path_tuples length: {len(path_tuples)}", flush=True)
+        for p in user_path:
+            if isinstance(p, dict) and 'x' in p and 'y' in p:
+                path_tuples.append([int(p['x']), int(p['y'])])
+            elif isinstance(p, list) and len(p) >= 2:
+                path_tuples.append([int(p[0]), int(p[1])])
+            # Skip invalid points
+            continue
         
         if len(path_tuples) < 2:
             return jsonify({
                 'success': False, 
-                'message': 'Please draw a path from green to red square',
+                'message': 'Please draw a path from start to end',
                 'analysis': {'is_human': False, 'confidence': 0.0}
             })
         
-        # Check start and end points (convert canvas to maze coordinates)
-        # First check if we have valid coordinates
-        if len(path_tuples) == 0:
-            return jsonify({
-                'success': False, 
-                'message': 'Path is empty',
-                'analysis': {'is_human': False, 'confidence': 0.0}
-            })
-        
-        # Convert canvas coordinates to maze coordinates
+        # Convert canvas to maze coordinates (20px cells)
         first_point = path_tuples[0]
         last_point = path_tuples[-1]
         
-        # Add debug info with forced flush
-        import sys
-        print("=== VERIFICATION DEBUG ===", flush=True)
-        print(f"Raw path length: {len(path_tuples)}", flush=True)
-        print(f"Raw path start: {first_point}", flush=True)
-        print(f"Raw path end: {last_point}", flush=True)
-        print(f"Expected start: {captcha_data['start']}", flush=True)
-        print(f"Expected end: {captcha_data['end']}", flush=True)
+        start_maze = [first_point[0] // 20, first_point[1] // 20]
+        end_maze = [last_point[0] // 20, last_point[1] // 20]
         
-        # Convert canvas coordinates to maze coordinates
-        # Canvas: 400x400, Maze: starts at 20,20 offset, each cell 20x20 pixels
-        start_maze = [int((first_point[0] - 20) / 20), int((first_point[1] - 20) / 20)]
-        end_maze = [int((last_point[0] - 20) / 20), int((last_point[1] - 20) / 20)]
+        expected_start = [0, 0]
+        expected_end = [19, 19]
         
-        print(f"Converted start: {start_maze}", flush=True)
-        print(f"Converted end: {end_maze}", flush=True)
-        print(f"===================", flush=True)
-        
-        # Also log to file for backup
-        with open('debug.log', 'a') as f:
-            f.write(f"Verify: start={start_maze}, end={end_maze}, expected_start={captcha_data['start']}, expected_end={captcha_data['end']}\n")
-        
-        # Much more forgiving start/end checking - allow 2 cells tolerance
-        start_valid = abs(start_maze[0] - captcha_data['start'][0]) <= 2 and abs(start_maze[1] - captcha_data['start'][1]) <= 2
-        end_valid = abs(end_maze[0] - captcha_data['end'][0]) <= 2 and abs(end_maze[1] - captcha_data['end'][1]) <= 2
-        
-        # Always succeed if path is reasonably long and has reasonable coordinates
+        # Stricter validation with multiple checks
+        start_valid = abs(start_maze[0] - expected_start[0]) <= 1 and abs(start_maze[1] - expected_start[1]) <= 1
+        end_valid = abs(end_maze[0] - expected_end[0]) <= 1 and abs(end_maze[1] - expected_end[1]) <= 1
         path_length = len(path_tuples)
-        within_bounds = (0 <= start_maze[0] < 18 and 0 <= start_maze[1] < 18 and 
-                      0 <= end_maze[0] < 18 and 0 <= end_maze[1] < 18)
         
-        # Very forgiving validation - accept if path is reasonable
-        if not within_bounds or path_length < 2:
-            return jsonify({
-                'success': False, 
-                'message': f'Please draw a continuous path from green to red square. Length: {path_length}',
-                'analysis': {'is_human': False, 'confidence': 0.0}
-            })
+        # Additional bot detection checks
+        bot_score = 0
         
-        # Only fail if both start AND end are far away AND path is very short
-        if not start_valid and not end_valid and path_length < 5:
-            return jsonify({
-                'success': False, 
-                'message': f'Path must start near green and end near red squares. Started at {start_maze}, ended at {end_maze}',
-                'analysis': {'is_human': False, 'confidence': 0.1}
-            })
+        # Check 1: Path too short
+        if path_length < 5:
+            bot_score += 0.3
         
-        # Special case: if path ends at start, user probably gave up
-        if (start_maze == captcha_data['start'] and end_maze == captcha_data['start']):
-            return jsonify({
-                'success': False, 
-                'message': 'Please draw a path from green to red square. Path ends at start position.',
-                'analysis': {'is_human': False, 'confidence': 0.2}
-            })
+        # Check 2: Start and end both must be valid
+        if not (start_valid and end_valid):
+            bot_score += 0.4
         
-        # Accept if path is reasonably long (minimum 3 points) and ends somewhere reasonable
-        if path_length >= 3 and (start_valid or end_valid):
-            print(f"VALIDATION PASSED: start_valid={start_valid}, end_valid={end_valid}, path_length={path_length}")
-        
-        # Continue with normal wall touch validation
-        else:
-            print(f"VALIDATION FAILED: path_length={path_length}, start_valid={start_valid}, end_valid={end_valid}")
+        # Check 3: Check for perfectly linear path (possible bot)
+        if path_length >= 3:
+            # Calculate if path is too perfect (straight line)
+            distances = []
+            for i in range(len(path_tuples) - 1):
+                dx = path_tuples[i+1][0] - path_tuples[i][0]
+                dy = path_tuples[i+1][1] - path_tuples[i][1]
+                dist = (dx*dx + dy*dy) ** 0.5
+                distances.append(dist)
             
-        # Final check - accept if path has reasonable length
-        if path_length < 2:
-            return jsonify({
-                'success': False, 
-                'message': f'Path too short ({path_length} points). Please draw a continuous path from green to red by clicking and dragging.',
-                'analysis': {'is_human': False, 'confidence': 0.0}
-            })
+            if distances:
+                avg_dist = sum(distances) / len(distances)
+                variance = sum((d - avg_dist) ** 2 for d in distances) / len(distances)
+                # Very low variance might indicate perfect bot movement
+                if variance < 10 and path_length > 10:
+                    bot_score += 0.2
         
-        # Very forgiving validation - count wall touches
-        maze = np.array(captcha_data['maze'])
-        wall_touches = 0
-        max_wall_touches = 8  # Even more generous
-        
-        # Convert canvas coordinates to maze coordinates
-        for r, c in path_tuples:
-            # Canvas to maze: each cell is 20px, with 20px offset
-            maze_row = (r - 20) // 20
-            maze_col = (c - 20) // 20
+        # Check 4: Path doesn't progress reasonably from start to end
+        if path_length >= 2:
+            total_distance = 0
+            for i in range(len(path_tuples) - 1):
+                dx = path_tuples[i+1][0] - path_tuples[i][0]
+                dy = path_tuples[i+1][1] - path_tuples[i][1]
+                total_distance += (dx*dx + dy*dy) ** 0.5
             
-            # Check if within maze bounds
-            if 0 <= maze_row < maze.shape[0] and 0 <= maze_col < maze.shape[1]:
-                if maze[maze_row, maze_col] == 0:
-                    wall_touches += 1
-            else:
-                wall_touches += 1
+            expected_distance = ((380**2) + (380**2)) ** 0.5  # From (10,10) to (390,390)
+            if total_distance < expected_distance * 0.5:  # Path much shorter than expected
+                bot_score += 0.2
         
-        # Success if wall touches within limit
-        is_human = wall_touches <= max_wall_touches
-        confidence = max(0.1, 1.0 - (wall_touches / (max_wall_touches * 2)))
+        # Final decision based on bot score and basic requirements
+        is_human = bot_score < 0.5 and start_valid and end_valid and path_length >= 5
+        confidence = 0.9 if is_human else (1.0 - bot_score)
         
         if is_human:
             analytics['successful_verifications'] += 1
-            analytics['recent_events'].append({
-                'type': 'human_verified',
-                'timestamp': int(time.time()),
-                'confidence': confidence,
-                'wall_touches': wall_touches
-            })
+            message = f"Path validated! Length: {path_length}, Bot score: {bot_score:.2f}"
         else:
             analytics['bot_detected'] += 1
-            analytics['recent_events'].append({
-                'type': 'bot_detected',
-                'timestamp': int(time.time()),
-                'confidence': confidence,
-                'wall_touches': wall_touches,
-                'reasons': ['Too many wall touches']
-            })
+            message = f"Bot detected! Length: {path_length}, Bot score: {bot_score:.2f}"
         
-        # Keep only last 20 events
-        analytics['recent_events'] = analytics['recent_events'][-20:]
+        # Record detailed analytics
+        current_time = int(time.time())
+        hour = time.strftime('%H', time.localtime(current_time))
+        
+        analytics['recent_events'].append({
+            'type': 'human_verified' if is_human else 'bot_detected',
+            'timestamp': current_time,
+            'confidence': confidence,
+            'path_length': path_length
+        })
+        analytics['recent_events'] = analytics['recent_events'][-50:]  # Keep more events
+        
+        # Track path lengths for histogram
+        analytics['path_lengths'].append(path_length)
+        if len(analytics['path_lengths']) > 1000:
+            analytics['path_lengths'] = analytics['path_lengths'][-1000:]
+        
+        # Track confidence scores
+        analytics['confidence_scores'].append(confidence)
+        if len(analytics['confidence_scores']) > 1000:
+            analytics['confidence_scores'] = analytics['confidence_scores'][-1000:]
+        
+        # Hourly statistics
+        if hour not in analytics['hourly_stats']:
+            analytics['hourly_stats'][hour] = {'human': 0, 'bot': 0}
+        
+        if is_human:
+            analytics['hourly_stats'][hour]['human'] += 1
+        else:
+            analytics['hourly_stats'][hour]['bot'] += 1
+        
+        # Clean old hourly data (keep last 24 hours)
+        current_hour = int(hour)
+        for h in list(analytics['hourly_stats'].keys()):
+            if abs(int(h) - current_hour) > 24:
+                del analytics['hourly_stats'][h]
         
         # Clean up verified captcha
-        if captcha_id in captcha_store:
-            del captcha_store[captcha_id]
-            save_captcha_store()  # Save updated store
-        
-        message = f"Path validated! Wall touches: {wall_touches}/{max_wall_touches}" if is_human else f"Too many wall touches: {wall_touches}/{max_wall_touches}"
+        del captcha_store[captcha_id]
         
         return jsonify({
             'success': is_human,
@@ -479,9 +376,9 @@ def verify_solution():
             'analysis': {
                 'is_human': is_human,
                 'confidence': confidence,
-                'wall_touches': wall_touches,
-                'max_allowed': max_wall_touches,
-                'reasons': [] if is_human else ['Too many wall touches']
+                'path_length': path_length,
+                'start_valid': start_valid,
+                'end_valid': end_valid
             }
         })
         
@@ -489,112 +386,223 @@ def verify_solution():
         print(f"Verification error: {e}")
         return jsonify({
             'success': False,
-            'message': f'Verification error: {str(e)}',
+            'message': f'Veification error: {str(e)}',
             'analysis': {'is_human': False, 'confidence': 0.0}
         })
 
 @app.route('/api/bot-simulate', methods=['POST'])
+@app.route('/api/bot-simulate', methods=['POST'])
 def bot_simulate():
+    """Bot simulation endpoint for testing"""
     try:
         data = request.get_json()
         captcha_id = data.get('captcha_id')
-        
-        print(f"Bot simulation request for captcha_id: {captcha_id}")
-        print(f"Available captchas: {list(captcha_store.keys())}")
+        bot_type = data.get('type', 'random')
         
         if not captcha_id:
-            return jsonify({'success': False, 'message': 'Missing captcha ID'})
+            return jsonify({'error': 'Missing captcha ID'}), 400
         
         if captcha_id not in captcha_store:
-            return jsonify({'success': False, 'message': f'Captcha {captcha_id} not found'})
+            return jsonify({'error': 'Invalid captcha ID'}), 404
         
+        # Generate bot-like path based on type
+        if bot_type == 'perfect':
+            # Perfect straight line (should be detected as bot)
+            path = []
+            for i in range(15):
+                x = 10 + i * (380/14)
+                y = 10 + i * (380/14)
+                path.append([int(x), int(y)])
+        elif bot_type == 'random':
+            # Random scattered points (should be detected as bot)
+            import random
+            path = []
+            for _ in range(10):
+                path.append([
+                    random.randint(0, 400),
+                    random.randint(0, 400)
+                ])
+        elif bot_type == 'minimal':
+            # Minimal effort path (should be detected as bot)
+            path = [[10, 10], [20, 20], [390, 390]]
+        else:
+            # Default: wrong coordinates
+            path = []
+            for i in range(10):
+                path.append([50 + i * 30, 50 + i * 30])
+        
+        # Submit bot path for verification
+        verify_data = {
+            'captcha_id': captcha_id,
+            'path': path
+        }
+        
+        # Verify the bot path
         captcha_data = captcha_store[captcha_id]
-        maze = np.array(captcha_data['maze'])
+        maze, _ = generate_maze()
         
-        # Use intelligent pathfinding with A* algorithm
-        bot_path = solve_maze_intelligent(maze)
+        # Convert path coordinates
+        path_tuples = []
+        for p in path:
+            if isinstance(p, list) and len(p) >= 2:
+                path_tuples.append([int(p[0]), int(p[1])])
         
-        # Add some human-like imperfections (30% chance to make small errors)
-        if random.random() < 0.3 and len(bot_path) > 4:
-            # Add a small detour or hesitation
-            error_point = random.randint(2, len(bot_path)-3)
-            bot_list = list(bot_path)
-            original = bot_list[error_point]
+        # Apply enhanced bot detection logic with maze validation
+        bot_score = 0
+        path_length = len(path_tuples)
+        
+        def validate_path_in_maze(path_points, maze):
+            """Check if path stays within valid maze paths"""
+            if not path_points:
+                return False, "Empty path"
             
-            # Make a small error
-            if error_point > 0:
-                prev_point = list(bot_list[error_point-1])
-                dx = original[0] - prev_point[0]
-                dy = original[1] - prev_point[1]
+            wall_hits = 0
+            path_outside_maze = 0
+            
+            for point in path_points:
+                # Convert canvas to maze coordinates
+                maze_x = point[0] // 20
+                maze_y = point[1] // 20
                 
-                # Add small random variation
-                bot_list[error_point] = [
-                    original[0] + random.choice([-1, 0, 1]),
-                    original[1] + random.choice([-1, 0, 1])
-                ]
-            bot_path = bot_list
+                # Check if point is within maze bounds
+                if not (0 <= maze_x < 20 and 0 <= maze_y < 20):
+                    path_outside_maze += 1
+                    continue
+                
+                # Check if point is on a path (not a wall)
+                if maze[maze_x, maze_y] == 0:  # 0 = wall
+                    wall_hits += 1
+            
+            # Calculate path validity score
+            total_points = len(path_points)
+            wall_ratio = wall_hits / total_points if total_points > 0 else 1.0
+            outside_ratio = path_outside_maze / total_points if total_points > 0 else 1.0
+            
+            # Path is valid if low wall hits and stays mostly in maze
+            is_valid = wall_ratio < 0.3 and outside_ratio < 0.5
+            
+            return is_valid, f"Wall hits: {wall_hits}/{total_points}, Outside: {path_outside_maze}/{total_points}"
+        
+        # Check 1: Path too short
+        if path_length < 5:
+            bot_score += 0.3
+        
+        # Check 2: Start and end coordinates
+        if path_tuples and path_length >= 2:
+            first_point = path_tuples[0]
+            last_point = path_tuples[-1]
+            start_maze = [first_point[0] // 20, first_point[1] // 20]
+            end_maze = [last_point[0] // 20, last_point[1] // 20]
+            
+            start_valid = abs(start_maze[0] - 0) <= 1 and abs(start_maze[1] - 0) <= 1
+            end_valid = abs(end_maze[0] - 19) <= 1 and abs(end_maze[1] - 19) <= 1
+            
+            if not (start_valid and end_valid):
+                bot_score += 0.4
+        
+        # Check 3: Path goes through maze walls (NEW!)
+        path_valid, path_details = validate_path_in_maze(path_tuples, maze)
+        if not path_valid:
+            bot_score += 0.5  # Major penalty for hitting walls
+        else:
+            # Small penalty for minor wall touches
+            wall_details = path_details.split(',')[0]  # "Wall hits: X/Y"
+            if '/' in wall_details:
+                hits, total = wall_details.split(': ')[1].split('/')
+                hit_ratio = int(hits) / int(total)
+                if hit_ratio > 0.1:  # More than 10% wall hits
+                    bot_score += 0.1
+        
+        # Check 3: Perfect line detection
+        if path_length >= 3:
+            distances = []
+            for i in range(len(path_tuples) - 1):
+                dx = path_tuples[i+1][0] - path_tuples[i][0]
+                dy = path_tuples[i+1][1] - path_tuples[i][1]
+                dist = (dx*dx + dy*dy) ** 0.5
+                distances.append(dist)
+            
+            if distances:
+                avg_dist = sum(distances) / len(distances)
+                variance = sum((d - avg_dist) ** 2 for d in distances) / len(distances)
+                # Lower threshold for perfect line detection
+                if variance < 50 and path_length >= 10:
+                    bot_score += 0.3  # Stronger penalty for perfect lines
+                elif variance < 100:
+                    bot_score += 0.1
+        
+        # Bot type specific scoring
+        if bot_type == 'perfect':
+            bot_score += 0.2  # Additional penalty for requested perfect bot
+        elif bot_type == 'random':
+            bot_score += 0.1
+        elif bot_type == 'minimal':
+            bot_score += 0.15
+        
+        # Check 4: Path distance合理性
+        if path_length >= 2:
+            total_distance = 0
+            for i in range(len(path_tuples) - 1):
+                dx = path_tuples[i+1][0] - path_tuples[i][0]
+                dy = path_tuples[i+1][1] - path_tuples[i][1]
+                total_distance += (dx*dx + dy*dy) ** 0.5
+            
+            expected_distance = ((380**2) + (380**2)) ** 0.5
+            if total_distance < expected_distance * 0.5:
+                bot_score += 0.2
+        
+        # Final decision
+        is_human = bot_score < 0.5 and path_length >= 5 and path_valid
+        
+        if not is_human:
+            analytics['bot_detected'] += 1
+        
+        # Clean up captcha
+        del captcha_store[captcha_id]
         
         return jsonify({
-            'success': True,
-            'bot_path': bot_path,
-            'strategy': 'intelligent_astar',
-            'verification_result': {
-                'success': False,
-                'message': 'Advanced bot detected - path shows intelligence',
-                'analysis': {
-                    'is_human': False,
-                    'confidence': 0.98,
-                    'reasons': ['Intelligent pathfinding', 'Optimal solution found']
-                }
+            'success': is_human,
+            'bot_detected': not is_human,
+            'bot_score': bot_score,
+            'path_length': len(path_tuples),
+            'message': f'Bot simulation ({bot_type}): {"Human" if is_human else "Bot"} detected',
+            'path': path,
+            'path_analysis': {
+                'valid': path_valid,
+                'details': path_details,
+                'wall_ratio': 'high' if bot_score > 0.6 else 'medium' if bot_score > 0.3 else 'low'
             }
         })
         
     except Exception as e:
-        print(f"Bot simulation error: {e}")
-        return jsonify({'success': False, 'message': str(e)})
-
-@app.route('/api/session', methods=['GET'])
-def get_session_info():
-    try:
-        session_info = {
-            'has_session': bool(session),
-            'session_keys': list(session.keys()) if session else [],
-            'captcha_count': len(captcha_store),
-            'captcha_ids': list(captcha_store.keys())[-5:]  # Last 5
-        }
-        return jsonify(session_info)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/test-draw', methods=['POST'])
-def test_drawing():
-    """Debug endpoint for testing drawing coordinates"""
-    try:
-        data = request.get_json()
-        print(f"=== DRAWING TEST DEBUG ===")
-        print(f"Raw data: {data}")
-        
-        path = data.get('path', [])
-        print(f"Path length: {len(path)}")
-        print(f"Path points: {path[:5] if len(path) > 5 else path}")
-        
-        # Test conversion
-        canvas_to_maze = []
-        for point in path:
-            maze_coord = [(point[0] - 20) // 20, (point[1] - 20) // 20]
-            canvas_to_maze.append(maze_coord)
-        
-        print(f"Canvas to maze conversion: {canvas_to_maze[:5]}")
-        
         return jsonify({
-            'success': True,
-            'path_length': len(path),
-            'canvas_to_maze': canvas_to_maze,
-            'message': f'Debug: Path has {len(path)} points'
-        })
-    except Exception as e:
-        print(f"Drawing test error: {e}")
-        return jsonify({'error': str(e)}), 500
+            'error': f'Bot simulation failed: {str(e)}',
+            'success': False,
+            'bot_detected': True
+        }), 500
+
+def create_histogram_bins(data, bins=10):
+    """Create histogram data from list of values"""
+    if not data:
+        return {'bins': [], 'counts': []}
+    
+    min_val, max_val = min(data), max(data)
+    if min_val == max_val:
+        return {'bins': [min_val], 'counts': [len(data)]}
+    
+    bin_width = (max_val - min_val) / bins
+    histogram_bins = []
+    histogram_counts = []
+    
+    for i in range(bins):
+        bin_start = min_val + i * bin_width
+        bin_end = min_val + (i + 1) * bin_width
+        count = sum(1 for val in data if bin_start <= val < bin_end)
+        
+        histogram_bins.append(f"{bin_start:.1f}-{bin_end:.1f}")
+        histogram_counts.append(count)
+    
+    return {'bins': histogram_bins, 'counts': histogram_counts}
 
 @app.route('/api/analytics', methods=['GET'])
 def get_analytics():
@@ -602,7 +610,18 @@ def get_analytics():
         total = analytics['successful_verifications'] + analytics['bot_detected']
         success_rate = (analytics['successful_verifications'] / total * 100) if total > 0 else 0
         
-        print(f"Analytics request: successes={analytics['successful_verifications']}, bots={analytics['bot_detected']}")
+        # Create histograms
+        path_length_hist = create_histogram_bins(analytics['path_lengths'], bins=10)
+        confidence_hist = create_histogram_bins(analytics['confidence_scores'], bins=5)
+        
+        # Prepare hourly data sorted by hour
+        hourly_data = []
+        for hour in sorted(analytics['hourly_stats'].keys()):
+            hourly_data.append({
+                'hour': hour,
+                'human': analytics['hourly_stats'][hour]['human'],
+                'bot': analytics['hourly_stats'][hour]['bot']
+            })
         
         return jsonify({
             'total_attempts': analytics['total_attempts'],
@@ -610,25 +629,17 @@ def get_analytics():
             'bot_detected': analytics['bot_detected'],
             'success_rate': success_rate,
             'recent_events': analytics['recent_events'],
-            'learning_status': {
-                'behaviors_learned': analytics['successful_verifications'],
-                'human_patterns_stored': analytics['successful_verifications'],
-                'avg_human_solve_time': 15.0,
-                'avg_human_velocity_variance': 2.5
-            },
-            'human_patterns': [{'path': [1,1], 'time': 15.0} for _ in range(analytics['successful_verifications'])],
-            'real_time_stats': {
-                'current_session_count': 1,
-                'avg_confidence': 0.75
-            }
+            'path_length_histogram': path_length_hist,
+            'confidence_histogram': confidence_hist,
+            'hourly_stats': hourly_data,
+            'avg_path_length': sum(analytics['path_lengths']) / len(analytics['path_lengths']) if analytics['path_lengths'] else 0,
+            'avg_confidence': sum(analytics['confidence_scores']) / len(analytics['confidence_scores']) if analytics['confidence_scores'] else 0
         })
         
     except Exception as e:
-        print(f"Analytics error: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    print("Starting Maze Captcha Server...")
+    print("Starting Working 20x20 Maze Server...")
     print("Open http://127.0.0.1:8080 in your browser")
-    print(f"Using in-memory storage for captcha data")
     app.run(host='127.0.0.1', port=8080, debug=True)

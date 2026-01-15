@@ -360,6 +360,24 @@
                     <canvas id="learningChart"></canvas>
                 </div>
 </section>
+
+<section class="section">
+    <h2 class="section-title">Advanced Analytics</h2>
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="chart-container">
+            <h3>Path Length Distribution</h3>
+            <canvas id="pathLengthHistogram"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>Confidence Score Distribution</h3>
+            <canvas id="confidenceHistogram"></canvas>
+        </div>
+    </div>
+    <div class="chart-container">
+        <h3>Hourly Activity</h3>
+        <canvas id="hourlyChart"></canvas>
+    </div>
+</section>
         
         <section class="section">
             <h2 class="section-title">Recent Activity</h2>
@@ -378,6 +396,10 @@
         var mazeImage = null;
         var analyticsData = null;
         var performanceChart = null;
+        var learningChart = null;
+        var pathLengthChart = null;
+        var confidenceChart = null;
+        var hourlyChart = null;
         
         // Canvas setup
         var canvas = document.getElementById('mazeCanvas');
@@ -463,15 +485,39 @@
                 ctx.stroke();
             }
             
-            // Draw bot path if exists
-            if (typeof botPath !== 'undefined' && botPath.length > 0) {
-                ctx.strokeStyle = '#ff0000';
-                ctx.lineWidth = 3;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.setLineDash([5, 5]);
+        // Draw bot path if exists
+        if (typeof botPath !== 'undefined' && botPath.length > 0) {
+            console.log('Drawing bot path in drawMaze():', botPath);
+            console.log('Bot path length:', botPath.length);
+            
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.setLineDash([5, 5]);
+            
+            // Check if botPath is already in canvas coordinates or needs conversion
+            var firstPoint = botPath[0];
+            console.log('First bot point:', firstPoint);
+            
+            // Check if points are already canvas coordinates (x,y) or maze coordinates (row,col)
+            if (firstPoint.length >= 2 && firstPoint[0] > 20 && firstPoint[1] > 20) {
+                // Already canvas coordinates, use directly
+                console.log('Using canvas coordinates directly');
+                var startX = firstPoint[0];
+                var startY = firstPoint[1];
                 
-                // Convert maze coordinates to canvas coordinates
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                
+                for (var i = 1; i < botPath.length; i++) {
+                    var x = botPath[i][0];
+                    var y = botPath[i][1];
+                    ctx.lineTo(x, y);
+                }
+            } else {
+                // Maze coordinates, convert to canvas coordinates
+                console.log('Converting maze coordinates to canvas');
                 var startX = botPath[0][1] * 20 + 20; // col to x with offset
                 var startY = botPath[0][0] * 20 + 20; // row to y with offset
                 
@@ -483,10 +529,12 @@
                     var y = botPath[i][0] * 20 + 20; // row to y with offset
                     ctx.lineTo(x, y);
                 }
-                
-                ctx.stroke();
-                ctx.setLineDash([]);
             }
+            
+            ctx.stroke();
+            ctx.setLineDash([]);
+            console.log('Bot path drawing completed');
+        }
         }
         
         // Draw start and end indicators
@@ -672,19 +720,25 @@
             })
             .then(function(result) {
                 console.log('Bot simulation response:', result);
-                if (result.verification_result && result.verification_result.analysis) {
-                    var analysis = result.verification_result.analysis;
-                    var confidence = (analysis.confidence * 100).toFixed(1);
-                    var detected = analysis.is_human ? 'Human' : 'Bot';
-                    showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', analysis.is_human ? 'error' : 'success');
+                
+                // Handle the actual response structure
+                if (result.success !== undefined) {
+                    var success = result.success;
+                    var detected = result.bot_detected ? 'Bot' : 'Human';
+                    var confidence = (result.bot_score ? (1 - result.bot_score) * 100 : 0).toFixed(1);
                     
-                    // Draw bot path
-                    if (result.bot_path && result.bot_path.length > 0) {
-                        botPath = result.bot_path;
+                    showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', result.bot_detected ? 'error' : 'success');
+                    
+                    // Draw bot path if available
+                    if (result.path && result.path.length > 0) {
+                        console.log('Drawing bot path:', result.path);
+                        // Keep bot path as canvas coordinates for direct drawing
+                        botPath = result.path;
+                        console.log('Bot path set for drawing:', botPath);
                         drawMaze();
                     }
-                } else if (result.success === false) {
-                    showStatus('Bot simulation failed: ' + (result.message || 'Unknown error'), 'error');
+                } else if (result.error) {
+                    showStatus('Bot simulation failed: ' + result.error, 'error');
                 } else {
                     console.log('Unexpected response structure:', result);
                     showStatus('Bot simulation failed - unexpected response', 'error');
@@ -770,9 +824,50 @@
                         learningChart.data.datasets[0].data = [
                             data.learning_status ? data.learning_status.behaviors_learned : 0,
                             data.learning_status ? data.learning_status.human_patterns_stored : 0,
-                            data.learning_status ? data.learning_status.avg_human_solve_time : 0
+                            data.avg_path_length || 0
                         ];
                         learningChart.update();
+                    }
+                    
+                    // Update path length histogram
+                    if (pathLengthChart && data.path_length_histogram) {
+                        pathLengthChart.data.labels = data.path_length_histogram.bins;
+                        pathLengthChart.data.datasets[0].data = data.path_length_histogram.counts;
+                        pathLengthChart.update();
+                    }
+                    
+                    // Update confidence histogram
+                    if (confidenceChart && data.confidence_histogram) {
+                        confidenceChart.data.labels = data.confidence_histogram.bins;
+                        confidenceChart.data.datasets[0].data = data.confidence_histogram.counts;
+                        confidenceChart.update();
+                    }
+                    
+                    // Update hourly activity chart
+                    if (hourlyChart && data.hourly_stats) {
+                        var hours = data.hourly_stats.map(function(item) { return item.hour + ':00'; });
+                        var humanData = data.hourly_stats.map(function(item) { return item.human; });
+                        var botData = data.hourly_stats.map(function(item) { return item.bot; });
+                        
+                        hourlyChart.data.labels = hours;
+                        hourlyChart.data.datasets[0].data = humanData;
+                        hourlyChart.data.datasets[1].data = botData;
+                        hourlyChart.update();
+                    }
+                    
+                    // Update average displays
+                    if (data.avg_path_length !== undefined) {
+                        var avgPathElement = document.getElementById('avgPathLength');
+                        if (avgPathElement) {
+                            avgPathElement.textContent = data.avg_path_length.toFixed(1);
+                        }
+                    }
+                    
+                    if (data.avg_confidence !== undefined) {
+                        var avgConfElement = document.getElementById('avgConfidence');
+                        if (avgConfElement) {
+                            avgConfElement.textContent = (data.avg_confidence * 100).toFixed(1) + '%';
+                        }
                     }
                     
                     // Update recent events display
@@ -907,6 +1002,130 @@
                 console.log('Learning chart initialized');
             } catch (error) {
                 console.error('Error initializing learning chart:', error);
+            }
+            
+            // Initialize histogram charts
+            try {
+                // Path length histogram
+                var pathLengthCtx = document.getElementById('pathLengthHistogram');
+                if (pathLengthCtx) {
+                    pathLengthChart = new Chart(pathLengthCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Path Length Frequency',
+                                data: [],
+                                backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                                borderColor: 'rgba(74, 222, 128, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Frequency'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Path Length Range'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Confidence histogram
+                var confidenceCtx = document.getElementById('confidenceHistogram');
+                if (confidenceCtx) {
+                    confidenceChart = new Chart(confidenceCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Confidence Score Frequency',
+                                data: [],
+                                backgroundColor: 'rgba(248, 113, 113, 0.6)',
+                                borderColor: 'rgba(248, 113, 113, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Frequency'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Confidence Range'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Hourly activity chart
+                var hourlyCtx = document.getElementById('hourlyChart');
+                if (hourlyCtx) {
+                    hourlyChart = new Chart(hourlyCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Human Users',
+                                data: [],
+                                borderColor: 'rgba(74, 222, 128, 1)',
+                                backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                                fill: true
+                            }, {
+                                label: 'Bot Attempts',
+                                data: [],
+                                borderColor: 'rgba(248, 113, 113, 1)',
+                                backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Count'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Hour of Day'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                console.log('Histogram charts initialized');
+            } catch (error) {
+                console.error('Error initializing histogram charts:', error);
             }
         };
     </script>

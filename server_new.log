@@ -1,0 +1,81 @@
+Starting Working 20x20 Maze Server...
+Open http://127.0.0.1:8080 in your browser
+ * Serving Flask app 'working_maze_server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 237-840-345
+127.0.0.1 - - [15/Jan/2026 12:04:52] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:02] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:05] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:08] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:12] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:22] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:32] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:35] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:35] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:35] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:35] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:35] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:35] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:05:42] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Working 20x20 Maze Server...
+Open http://127.0.0.1:8080 in your browser
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_7730
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_5844
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_1735
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_6229
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_9577
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_5508
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_7806
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475108_1960
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475135_7878
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475135_9375
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475135_9618
+✅ 20x20 maze generated successfully!
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 237-840-345
+127.0.0.1 - - [15/Jan/2026 12:05:52] "GET /api/analytics HTTP/1.1" 200 -
+/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-s3nwwjwl'}
+  warnings.warn(

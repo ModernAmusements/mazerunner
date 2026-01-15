@@ -1,26 +1,6 @@
-Starting Maze Captcha Server...
+Starting Working 20x20 Maze Server...
 Open http://127.0.0.1:8080 in your browser
- * Serving Flask app 'simple_maze_server'
+ * Serving Flask app 'working_maze_server'
  * Debug mode: on
-[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on http://127.0.0.1:8080
-[33mPress CTRL+C to quit[0m
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 116-033-522
-127.0.0.1 - - [15/Jan/2026 00:37:29] "GET /api/captcha HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:37:30] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:37:34] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:37:40] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:37:50] "GET /api/analytics HTTP/1.1" 200 -
- * Detected change in '/Users/modernamusmenet/Desktop/BOT/simple_maze_server.py', reloading
-Starting Maze Captcha Server...
-Open http://127.0.0.1:8080 in your browser
-Bot simulation request for captcha_id: maze_1768433849_6168
-Session data keys: ['captchas']
-Available captchas: ['maze_1768433849_6168']
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 116-033-522
-/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-ceq05x76'}
-  warnings.warn(
+Address already in use
+Port 8080 is in use by another program. Either identify and stop that program, or start the server with a different port.

@@ -1,32 +1,167 @@
-Starting Maze Captcha Server...
+Starting Working 20x20 Maze Server...
 Open http://127.0.0.1:8080 in your browser
- * Serving Flask app 'simple_maze_server'
+ * Serving Flask app 'working_maze_server'
  * Debug mode: on
 [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 [33mPress CTRL+C to quit[0m
  * Restarting with stat
  * Debugger is active!
- * Debugger PIN: 116-033-522
-127.0.0.1 - - [15/Jan/2026 00:38:08] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:10] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:20] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:30] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:37] "GET /api/captcha HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:40] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:46] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:38:50] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:39:00] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:39:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:39:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 00:39:10] "GET /api/analytics HTTP/1.1" 200 -
- * Detected change in '/Users/modernamusmenet/Desktop/BOT/simple_maze_server.py', reloading
-Starting Maze Captcha Server...
+ * Debugger PIN: 237-840-345
+127.0.0.1 - - [15/Jan/2026 12:06:12] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:16] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:16] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:16] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:20] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:22] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:32] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:42] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:49] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:06:52] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:02] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:05] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:07] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:07] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:12] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:22] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:32] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:38] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:38] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 12:07:42] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:42] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 12:07:42] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:46] "[33mPOST /api/bot-simulate HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 12:07:52] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:53] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:59] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:07:59] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:01] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:02] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:05] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:12] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:22] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:32] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:42] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:08:52] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:09:02] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:09:05] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Working 20x20 Maze Server...
+Open http://127.0.0.1:8080 in your browser
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475176_9392
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475176_6344
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475176_9633
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_1794
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_4771
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_4233
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_1940
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_5801
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_3015
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_2322
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475180_9562
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_9434
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_2829
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_1728
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_6790
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_9810
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_3591
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475209_1948
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475227_6672
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475262_2824
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475273_1192
+✅ 20x20 maze generated successfully!
+✅ 20x20 maze generated successfully!
+Generated maze maze_1768475281_2276
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 237-840-345
+127.0.0.1 - - [15/Jan/2026 12:09:12] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:09:22] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:09:32] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Working 20x20 Maze Server...
 Open http://127.0.0.1:8080 in your browser
  * Restarting with stat
  * Debugger is active!
- * Debugger PIN: 116-033-522
-/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-anoykxle'}
+ * Debugger PIN: 237-840-345
+127.0.0.1 - - [15/Jan/2026 12:09:42] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:09:52] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:10:02] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:10:05] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 12:10:12] "GET /api/analytics HTTP/1.1" 200 -
+/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-150jm9c1'}
   warnings.warn(
