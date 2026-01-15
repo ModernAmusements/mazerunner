@@ -1,0 +1,161 @@
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Serving Flask app 'working_maze_server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:51:59] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:00] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:03] "GET /api/captcha HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:10] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:14] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:14] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:14] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:14] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:52:19] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:19] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:25] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:25] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:29] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:29] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:30] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:34] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:34] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:36] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:46] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:52:56] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:06] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:18] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:18] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:24] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:24] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:25] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:30] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:30] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:36] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Generated captcha maze_1768434723_3422, total stored: 1
+Generated captcha maze_1768434734_6722, total stored: 2
+Generated captcha maze_1768434736_8602, total stored: 3
+Generated captcha maze_1768434736_8455, total stored: 4
+Generated captcha maze_1768434736_7556, total stored: 5
+Generated captcha maze_1768434736_5124, total stored: 6
+Bot simulation request for captcha_id: maze_1768434736_5124
+Available captchas: ['maze_1768434723_3422', 'maze_1768434734_6722', 'maze_1768434736_8602', 'maze_1768434736_8455', 'maze_1768434736_7556', 'maze_1768434736_5124']
+Generated captcha maze_1768434750_5922, total stored: 7
+Generated captcha maze_1768434805_8257, total stored: 8
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:53:46] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:56] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:57] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:57] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:53:57] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:53:57] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Generated captcha maze_1768434837_1756, total stored: 1
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:54:06] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:06] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:07] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:09] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:11] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:11] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:11] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:14] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Bot simulation request for captcha_id: maze_1768434837_1756
+Available captchas: []
+Generated captcha maze_1768434851_8491, total stored: 1
+Bot simulation request for captcha_id: maze_1768434851_8491
+Available captchas: ['maze_1768434851_8491']
+Generated captcha maze_1768434854_9132, total stored: 2
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:54:15] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:15] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:17] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:17] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:19] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:19] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Bot simulation request for captcha_id: maze_1768434854_9132
+Available captchas: []
+Generated captcha maze_1768434857_8783, total stored: 1
+Bot simulation request for captcha_id: maze_1768434857_8783
+Available captchas: ['maze_1768434857_8783']
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:54:27] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:37] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:54:47] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:54:57] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-_r4vsy_k'}
+  warnings.warn(

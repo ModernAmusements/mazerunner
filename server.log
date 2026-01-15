@@ -1,81 +1,62 @@
-🚀 Starting Production-Ready Maze Captcha System with Rate Limiting
-📚 Learned from 0 human patterns
-🛡️  Rate limiting enabled with thresholds:
-   - General requests: 60/min
-   - Captcha requests: 30/min
-   - Failed attempts threshold: 5
-🌐 Available at: http://127.0.0.1:8080
-📊 Analytics: http://127.0.0.1:8080/api/analytics
- * Serving Flask app 'production_maze_captcha'
- * Debug mode: off
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+ * Serving Flask app 'simple_maze_server'
+ * Debug mode: on
 [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
 [33mPress CTRL+C to quit[0m
-127.0.0.1 - - [14/Jan/2026 20:15:34] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:39] "GET /api/captcha HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:40] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:44] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:44] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:54] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:54] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:54] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:55] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:56] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:56] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:56] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [14/Jan/2026 20:15:56] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:58] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:58] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:59] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:15:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:16:00] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:16:00] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 20:16:00] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:49] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:51] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:51] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:52] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:52] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:52] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:57] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:57] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:58] "POST /api/bot-simulate HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:58] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 22:59:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:00] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:02] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:10] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:10] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:12] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:19] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:19] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:19] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:22] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:27] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
-127.0.0.1 - - [14/Jan/2026 23:00:29] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:29] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:29] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:32] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:39] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:39] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:39] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:42] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:49] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:49] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:49] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:52] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [14/Jan/2026 23:00:59] "GET /api/analytics HTTP/1.1" 200 -
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:35:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:35:22] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:35:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:35:36] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:35:46] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:35:56] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:06] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:11] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:11] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:36:11] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:11] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:11] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:36:15] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:15] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:18] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:21] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:30] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:30] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:31] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:32] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:32] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:35] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:36] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:36] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:37] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:37] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:38] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:38] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:38] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:38] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:39] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:39] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:39] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:39] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:41] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:50] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:36:50] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:50] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:51] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:36:51] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:37:00] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/simple_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-6xoug_f1'}
+  warnings.warn(

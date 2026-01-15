@@ -1,0 +1,70 @@
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Serving Flask app 'working_maze_server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 01:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:14] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:20] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:20] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 01:06:20] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 01:06:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:22] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:22] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:25] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:29] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:29] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:30] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:40] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:06:50] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:00] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:07] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:10] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:20] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:30] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:40] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:47] "GET /api/captcha HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:07:50] "GET /api/analytics HTTP/1.1" 200 -
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Generated captcha maze_1768435580_9863, total stored: 9
+Bot simulation request for captcha_id: maze_1768435580_9863
+Available captchas: ['maze_1768435259_9167', 'maze_1768435349_2932', 'maze_1768435351_4950', 'maze_1768435362_5559', 'maze_1768435503_2202', 'maze_1768435531_4347', 'maze_1768435542_7227', 'maze_1768435544_9805', 'maze_1768435580_9863']
+Generated captcha maze_1768435585_9309, total stored: 10
+Generated captcha maze_1768435667_7675, total stored: 11
+=== VERIFICATION DEBUG ===
+Raw path length: 3
+Raw path start: [50, 50]
+Raw path end: [150, 150]
+Expected start: [1, 1]
+Expected end: [16, 16]
+Converted start: [1, 1]
+Converted end: [6, 6]
+===================
+127.0.0.1 - - [15/Jan/2026 01:07:53] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:00] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:10] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 01:08:20] "GET /api/analytics HTTP/1.1" 200 -
+/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-uu_fuswh'}
+  warnings.warn(

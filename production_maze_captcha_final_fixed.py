@@ -3,6 +3,9 @@
 Production-Ready Maze Captcha with Complete Monitoring and Logging
 """
 
+# Import Flask first
+from flask import Flask, request, jsonify, render_template, session, make_response
+
 # Import our modules
 from rate_limiter import apply_rate_limiting, add_admin_endpoints, rate_limiter
 from database_sessions import db_session_manager

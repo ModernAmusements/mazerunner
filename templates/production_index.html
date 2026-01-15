@@ -169,6 +169,67 @@
             display: none;
         }
         
+        .recent-events {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .event-item {
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+            background: white;
+        }
+        
+        .human-event {
+            border-left-color: #4ade80;
+        }
+        
+        .bot-event {
+            border-left-color: #f87171;
+        }
+        
+        .system-event {
+            border-left-color: #666;
+        }
+        
+        .event-time {
+            font-size: 0.9em;
+            color: #666;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .event-type {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .event-confidence {
+            font-size: 0.85em;
+            color: #666;
+            display: block;
+        }
+        
+        .event-reasons {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .event-wall {
+            font-size: 0.8em;
+            color: #dc3545;
+            margin-top: 4px;
+        }
+        
         .analytics-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -277,13 +338,36 @@
                         <div class="stat-value" id="learnedPatterns">0</div>
                         <div class="stat-label">Learned Patterns</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="wallTouchTolerance">Max 3+1 per 10 steps</div>
+                        <div class="stat-label">Wall Touch Tolerance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sessionCount">0</div>
+                        <div class="stat-label">Active Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgConfidence">0%</div>
+                        <div class="stat-label">Avg Confidence</div>
+                    </div>
                 </div>
                 
                 <div class="chart-container">
                     <canvas id="performanceChart"></canvas>
                 </div>
-            </section>
-        </div>
+                <div class="chart-container">
+                    <h3>Learning Progress</h3>
+                    <canvas id="learningChart"></canvas>
+                </div>
+</section>
+        
+        <section class="section">
+            <h2 class="section-title">Recent Activity</h2>
+            <div id="recentEvents" class="recent-events">
+                <p>No recent events</p>
+            </div>
+        </section>
+    </div>
     </div>
 
     <script>
@@ -344,6 +428,8 @@
                     mazeImage = new Image();
                     mazeImage.onload = function() {
                         drawMaze();
+                        // Draw start and end indicators
+                        drawStartEnd();
                         showStatus('New captcha loaded! Draw a path from green to red.', 'info');
                     };
                     mazeImage.src = captcha.maze_image;
@@ -385,16 +471,16 @@
                 ctx.lineJoin = 'round';
                 ctx.setLineDash([5, 5]);
                 
-                // Convert maze coordinates to pixel coordinates
-                var startX = botPath[0][1] * 20 + 10; // col to x
-                var startY = botPath[0][0] * 20 + 10; // row to y
+                // Convert maze coordinates to canvas coordinates
+                var startX = botPath[0][1] * 20 + 20; // col to x with offset
+                var startY = botPath[0][0] * 20 + 20; // row to y with offset
                 
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 
                 for (var i = 1; i < botPath.length; i++) {
-                    var x = botPath[i][1] * 20 + 10; // col to x
-                    var y = botPath[i][0] * 20 + 10; // row to y
+                    var x = botPath[i][1] * 20 + 20; // col to x with offset
+                    var y = botPath[i][0] * 20 + 20; // row to y with offset
                     ctx.lineTo(x, y);
                 }
                 
@@ -403,36 +489,76 @@
             }
         }
         
+        // Draw start and end indicators
+        function drawStartEnd() {
+            if (!currentCaptcha) return;
+            
+            // Save current context state
+            ctx.save();
+            
+            // Draw a circle around start
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(currentCaptcha.canvas_start[0] + 10, currentCaptcha.canvas_start[1] + 10, 15, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw "S" text in start
+            ctx.fillStyle = '#00ff00';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('S', currentCaptcha.canvas_start[0] + 6, currentCaptcha.canvas_start[1] + 15);
+            
+            // Draw a circle around end
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(currentCaptcha.canvas_end[0] + 10, currentCaptcha.canvas_end[1] + 10, 15, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw "E" text in end
+            ctx.fillStyle = '#ff0000';
+            ctx.fillText('E', currentCaptcha.canvas_end[0] + 6, currentCaptcha.canvas_end[1] + 15);
+            
+            // Restore context state
+            ctx.restore();
+        }
+        
         // Canvas mouse events
         canvas.addEventListener('mousedown', function(e) {
             if (!currentCaptcha) return;
             
             var rect = canvas.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
+            var x = Math.floor(e.clientX - rect.left);
+            var y = Math.floor(e.clientY - rect.top);
+            
+            console.log('MouseDown at:', x, y);
+            console.log('Expected start:', currentCaptcha.canvas_start);
             
             isDrawing = true;
             userPath = [{x: x, y: y}];
             drawMaze();
+            drawStartEnd(); // Redraw indicators
         });
 
         canvas.addEventListener('mousemove', function(e) {
             if (!isDrawing) return;
             
             var rect = canvas.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
+            var x = Math.floor(e.clientX - rect.left);
+            var y = Math.floor(e.clientY - rect.top);
             
-            if (userPath.length === 0 || 
-                Math.abs(x - userPath[userPath.length - 1].x) > 5 ||
-                Math.abs(y - userPath[userPath.length - 1].y) > 5) {
+            var lastPoint = userPath[userPath.length - 1];
+            if (Math.abs(x - lastPoint.x) > 3 || Math.abs(y - lastPoint.y) > 3) {
                 userPath.push({x: x, y: y});
                 drawMaze();
+                drawStartEnd(); // Redraw indicators
             }
         });
 
         canvas.addEventListener('mouseup', function() {
             isDrawing = false;
+            console.log('MouseUp - Final path length:', userPath.length);
+            console.log('Path points:', userPath.slice(0, 3), '...', userPath.slice(-3));
         });
 
         canvas.addEventListener('mouseleave', function() {
@@ -462,6 +588,11 @@
             
             showStatus('Analyzing your solution...', 'info');
             
+            // Send raw canvas coordinates, let server handle conversion
+            console.log('Sending path:', userPath);
+            console.log('Expected start:', currentCaptcha.canvas_start);
+            console.log('Expected end:', currentCaptcha.canvas_end);
+            
             fetch('/api/verify', {
                 method: 'POST',
                 headers: {
@@ -470,9 +601,7 @@
                 credentials: 'same-origin',
                 body: JSON.stringify({
                     captcha_id: currentCaptcha.captcha_id,
-                    path: userPath.map(function(point) {
-                        return [Math.floor(point.x / 20), Math.floor(point.y / 20)];
-                    })
+                    path: userPath
                 })
             })
             .then(function(response) {
@@ -480,10 +609,14 @@
             })
             .then(function(result) {
                 if (result.success) {
-                    showStatus('Success: ' + result.message + ' (Confidence: ' + (result.analysis.confidence * 100).toFixed(1) + '%)', 'success');
+                    var confidence = result.analysis && result.analysis.confidence ? 
+                        (result.analysis.confidence * 100).toFixed(1) : '0.0';
+                    showStatus('Success: ' + result.message + ' (Confidence: ' + confidence + '%)', 'success');
                     setTimeout(loadNewCaptcha, 2000);
                 } else {
-                    showStatus('Error: ' + result.message + ' (Confidence: ' + (result.analysis.confidence * 100).toFixed(1) + '%)', 'error');
+                    var confidence = result.analysis && result.analysis.confidence ? 
+                        (result.analysis.confidence * 100).toFixed(1) : '0.0';
+                    showStatus('Error: ' + result.message + ' (Confidence: ' + confidence + '%)', 'error');
                 }
                 
                 updateAnalytics();
@@ -554,40 +687,108 @@
             });
         }
         
-        // Update analytics
+        // Update analytics with comprehensive display
         function updateAnalytics() {
+            console.log('Updating analytics...');
             fetch('/api/analytics')
                 .then(function(response) {
+                    console.log('Analytics response status:', response.status);
                     return response.json();
                 })
                 .then(function(data) {
+                    console.log('Analytics data received:', data);
                     analyticsData = data;
                     
-                    // Update stats
-                    var totalAttempts = (data.successful_verifications || 0) + (data.bot_detected || 0);
-                    document.getElementById('totalAttempts').textContent = totalAttempts;
+                    // Update basic stats with error checking
+                    var total = (data.successful_verifications || 0) + (data.bot_detected || 0);
+                    document.getElementById('totalAttempts').textContent = total;
+                    
+                    // Update successful verifications if element exists
+                    var successElement = document.getElementById('successful_verifications');
+                    if (successElement) {
+                        successElement.textContent = data.successful_verifications || 0;
+                    }
+                    
                     document.getElementById('botDetected').textContent = data.bot_detected || 0;
                     document.getElementById('patternsLearned').textContent = data.learning_status ? data.learning_status.behaviors_learned : 0;
                     document.getElementById('learnedPatterns').textContent = data.human_patterns ? data.human_patterns.length : 0;
                     
                     // Calculate success rate
-                    var successRate = totalAttempts > 0 ? 
-                        ((data.successful_verifications / totalAttempts) * 100).toFixed(1) : 0;
-                    document.getElementById('successRate').textContent = successRate + '%';
+                    var successRate = total > 0 ? 
+                        ((data.successful_verifications / total) * 100).toFixed(1) : 0;
+                    var successRateElement = document.getElementById('successRate');
+                    if (successRateElement) {
+                        successRateElement.textContent = successRate + '%';
+                    }
                     
                     // Update average solve time
                     var avgTime = data.learning_status ? data.learning_status.avg_human_solve_time : 0;
-                    document.getElementById('avgSolveTime').textContent = avgTime.toFixed(1) + 's';
+                    var avgTimeElement = document.getElementById('avgSolveTime');
+                    if (avgTimeElement) {
+                        avgTimeElement.textContent = avgTime.toFixed(1) + 's';
+                    }
+                    
+                    // Update additional metrics with safe checks
+                    var wallToleranceElement = document.getElementById('wallTouchTolerance');
+                    if (wallToleranceElement) {
+                        wallToleranceElement.textContent = 'Max 8 wall touches';
+                    }
+                    
+                    var sessionElement = document.getElementById('sessionCount');
+                    if (sessionElement) {
+                        sessionElement.textContent = data.real_time_stats ? data.real_time_stats.current_session_count : 0;
+                    }
+                    
+                    var confidenceElement = document.getElementById('avgConfidence');
+                    if (confidenceElement) {
+                        confidenceElement.textContent = data.real_time_stats ? (data.real_time_stats.avg_confidence * 100).toFixed(1) + '%' : '0%';
+                    }
                     
                     // Update performance chart
-                    if (performanceChart && data) {
+                    if (performanceChart) {
                         performanceChart.data.datasets[0].data = [
                             data.successful_verifications || 0,
-                            totalAttempts - (data.successful_verifications || 0) - (data.bot_detected || 0),
+                            total - (data.successful_verifications || 0) - (data.bot_detected || 0),
                             data.bot_detected || 0
                         ];
                         performanceChart.update();
                     }
+                    
+                    // Update learning chart
+                    if (learningChart) {
+                        learningChart.data.datasets[0].data = [
+                            data.learning_status ? data.learning_status.behaviors_learned : 0,
+                            data.learning_status ? data.learning_status.human_patterns_stored : 0,
+                            data.learning_status ? data.learning_status.avg_human_solve_time : 0
+                        ];
+                        learningChart.update();
+                    }
+                    
+                    // Update recent events display
+                    if (data.recent_events && data.recent_events.length > 0) {
+                        var recentEventsHtml = '';
+                        data.recent_events.slice(-10).reverse().forEach(function(event) {
+                            var time = new Date(event.timestamp * 1000).toLocaleTimeString();
+                            var eventClass = event.type === 'human_verified' ? 'human-event' : 
+                                             event.type === 'bot_detected' ? 'bot-event' : 'system-event';
+                            var confidence = (event.confidence * 100).toFixed(1);
+                            
+                            recentEventsHtml += '<div class="event-item ' + eventClass + '">';
+                            recentEventsHtml += '<span class="event-time">' + time + '</span>';
+                            recentEventsHtml += '<span class="event-type">' + event.type.replace('_', ' ').toUpperCase() + '</span>';
+                            recentEventsHtml += '<span class="event-confidence">Confidence: ' + confidence + '%</span>';
+                            if (event.reasons && event.reasons.length > 0) {
+                                recentEventsHtml += '<div class="event-reasons">Reasons: ' + event.reasons.join(', ') + '</div>';
+                            }
+                            if (event.wall_touches !== undefined) {
+                                recentEventsHtml += '<div class="event-wall">Wall touches: ' + event.wall_touches + '</div>';
+                            }
+                            recentEventsHtml += '</div>';
+                        });
+                        document.getElementById('recentEvents').innerHTML = recentEventsHtml;
+                    }
+                    
+                    console.log('Analytics updated successfully');
                 })
                 .catch(function(error) {
                     console.error('Error updating analytics:', error);
@@ -619,6 +820,83 @@
             
             // Update analytics every 10 seconds
             setInterval(updateAnalytics, 10000);
+        }
+        
+        // Initialize charts with error checking
+        function initCharts() {
+            console.log('Initializing charts...');
+            
+            // Performance chart (doughnut)
+            var performanceCtx = document.getElementById('performanceChart');
+            if (!performanceCtx) {
+                console.error('Performance chart canvas not found!');
+                return;
+            }
+            
+            try {
+                performanceChart = new Chart(performanceCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Successful', 'Failed', 'Bot Detected'],
+                        datasets: [{
+                            data: [0, 0, 0],
+                            backgroundColor: [
+                                'rgba(74, 222, 128, 0.8)',
+                                'rgba(248, 113, 113, 0.8)',
+                                'rgba(249, 115, 115, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(74, 222, 128, 1)',
+                                'rgba(248, 113, 113, 1)',
+                                'rgba(249, 115, 115, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                console.log('Performance chart initialized');
+            } catch (error) {
+                console.error('Error initializing performance chart:', error);
+            }
+            
+            // Learning progress chart (bar)
+            var learningCtx = document.getElementById('learningChart');
+            if (!learningCtx) {
+                console.error('Learning chart canvas not found!');
+                return;
+            }
+            
+            try {
+                learningChart = new Chart(learningCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Behaviors Learned', 'Patterns Stored', 'Avg Solve Time'],
+                        datasets: [{
+                            label: 'Learning Progress',
+                            data: [0, 0, 0],
+                            backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                            borderColor: 'rgba(74, 222, 128, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                console.log('Learning chart initialized');
+            } catch (error) {
+                console.error('Error initializing learning chart:', error);
+            }
         };
     </script>
 </body>

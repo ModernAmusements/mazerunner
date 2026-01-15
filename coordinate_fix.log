@@ -1,0 +1,65 @@
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Serving Flask app 'working_maze_server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 01:08:40] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:50] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:08:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:00] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:10] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:20] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:24] "GET /api/captcha HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:30] "GET /api/analytics HTTP/1.1" 200 -
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Generated captcha maze_1768435764_6778, total stored: 12
+=== VERIFICATION DEBUG ===
+Raw path length: 3
+Raw path start: [50, 50]
+Raw path end: [150, 150]
+Expected start: [1, 1]
+Expected end: [16, 16]
+Converted start: [1, 1]
+Converted end: [6, 6]
+===================
+127.0.0.1 - - [15/Jan/2026 01:09:30] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:40] "GET /api/analytics HTTP/1.1" 200 -
+=== VERIFICATION DEBUG ===
+Raw path length: 3
+Raw path start: [40, 40]
+Raw path end: [340, 340]
+Expected start: [1, 1]
+Expected end: [16, 16]
+Converted start: [1, 1]
+Converted end: [16, 16]
+===================
+127.0.0.1 - - [15/Jan/2026 01:09:43] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:50] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:53] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:54] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 01:09:58] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:09:58] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 01:09:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:08] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:16] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:18] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:24] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:24] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:28] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 01:10:38] "GET /api/analytics HTTP/1.1" 200 -

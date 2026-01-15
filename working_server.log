@@ -1,0 +1,145 @@
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Serving Flask app 'working_maze_server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:44:25] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:25] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:26] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:27] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:27] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:27] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:27] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:28] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:28] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:28] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:28] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:28] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:29] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:31] "GET /api/captcha HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:32] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:32] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:33] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:33] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:33] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:33] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:34] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:34] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:35] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:37] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:37] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:38] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:39] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:39] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:41] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:42] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:42] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:48] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:44:58] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:08] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:18] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:28] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:37] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:37] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:38] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:48] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:45:58] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:08] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:18] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:28] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:38] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:48] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:57] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:46:58] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:00] "POST /api/bot-simulate HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:00] "GET /api/analytics HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Bot simulation request for captcha_id: maze_1768434241_3018
+Available captchas: []
+Bot simulation request for captcha_id: maze_1768434241_3018
+Available captchas: []
+Bot simulation request for captcha_id: maze_1768434241_3018
+Available captchas: []
+Bot simulation request for captcha_id: maze_1768434241_3018
+Available captchas: []
+Bot simulation request for captcha_id: maze_1768434241_3018
+Available captchas: []
+Bot simulation request for captcha_id: maze_1768434241_3018
+Available captchas: []
+Generated captcha maze_1768434269_6886, total stored: 1
+Generated captcha maze_1768434271_9078, total stored: 2
+Bot simulation request for captcha_id: maze_1768434269_6886
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078']
+Bot simulation request for captcha_id: maze_1768434269_6886
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078']
+Bot simulation request for captcha_id: maze_1768434269_6886
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078']
+Bot simulation request for captcha_id: maze_1768434269_6886
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078']
+Generated captcha maze_1768434275_9905, total stored: 3
+Generated captcha maze_1768434277_8131, total stored: 4
+Generated captcha maze_1768434277_1395, total stored: 5
+Bot simulation request for captcha_id: maze_1768434277_1395
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078', 'maze_1768434275_9905', 'maze_1768434277_8131', 'maze_1768434277_1395']
+Generated captcha maze_1768434281_3229, total stored: 6
+Bot simulation request for captcha_id: maze_1768434281_3229
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078', 'maze_1768434275_9905', 'maze_1768434277_8131', 'maze_1768434277_1395', 'maze_1768434281_3229']
+Generated captcha maze_1768434417_2864, total stored: 6
+Bot simulation request for captcha_id: maze_1768434417_2864
+Available captchas: ['maze_1768434269_6886', 'maze_1768434271_9078', 'maze_1768434275_9905', 'maze_1768434277_8131', 'maze_1768434277_1395', 'maze_1768434417_2864']
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:47:07] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:08] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:09] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:09] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:47:09] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:09] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Generated captcha maze_1768434427_6540, total stored: 1
+Generated captcha maze_1768434429_8189, total stored: 2
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:47:11] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:11] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 00:47:11] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 00:47:11] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Generated captcha maze_1768434431_8211, total stored: 1
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+ * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 116-033-522
+127.0.0.1 - - [15/Jan/2026 00:47:21] "GET /api/analytics HTTP/1.1" 200 -
+/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-ika91olq'}
+  warnings.warn(

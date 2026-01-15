@@ -366,6 +366,7 @@ def get_captcha():
     solution = solve_maze(maze)
     
     captcha_id = hashlib.md5(f"{time.time()}{random.random()}".encode()).hexdigest()[:12]
+    # Simplified session approach - store everything in session but limit mouse data
     session[captcha_id] = {
         'maze': maze.tolist(),
         'solution': solution,
@@ -384,6 +385,16 @@ def get_captcha():
     _, buffer = cv2.imencode('.png', img)
     img_base64 = base64.b64encode(buffer).decode()
     
+    # Update analytics
+    analytics['total_attempts'] += 1
+    analytics['difficulty_stats'][difficulty]['attempts'] += 1
+    analytics['recent_events'].append({
+        'type': 'captcha_generated',
+        'timestamp': time.time(),
+        'difficulty': difficulty,
+        'captcha_id': captcha_id
+    })
+    
     return jsonify({
         'captcha_id': captcha_id,
         'maze_image': f"data:image/png;base64,{img_base64}",
@@ -391,7 +402,13 @@ def get_captcha():
         'end': (maze.shape[0]-2, maze.shape[1]-2),
         'difficulty': difficulty,
         'timestamp': time.time(),
-        'learned_patterns': analytics['learned_behaviors']['sample_count']
+        'learned_patterns': analytics['learned_behaviors']['sample_count'],
+        'analytics': {
+            'total_attempts': analytics['total_attempts'],
+            'successful_verifications': analytics['successful_verifications'],
+            'bot_detected': analytics['bot_detected'],
+            'human_detected': analytics['human_detected']
+        }
     })
 
 @app.route('/api/track', methods=['POST'])
@@ -423,51 +440,7 @@ def simulate_bot():
         return jsonify({'success': False, 'message': 'Invalid captcha'})
     
     captcha_data = session[captcha_id]
-    bot_result = create_bot(captcha_data)
-    
-    if not bot_result:
-        return jsonify({'success': False, 'message': 'Failed to create bot'})
-    
-    # Update session with bot data
-    session[captcha_id]['mouse_data'] = bot_result['mouse_data']
-    session[captcha_id]['start_time'] = time.time() - bot_result['solve_time']
-    
-    # Verify bot solution
-    analysis = analyze_and_learn(
-        bot_result['mouse_data'],
-        bot_result['solve_time'],
-        bot_result['path']
-    )
-    
-    success = analysis['is_human']
-    message = "Human verified - captcha solved successfully!" if success else f"Bot detected: {analysis['reasons'][0] if analysis['reasons'] else 'Unknown'}"
-    
-    return jsonify({
-        'success': True,
-        'bot_path': bot_result['path'],
-        'solve_time': bot_result['solve_time'],
-        'mouse_movements': len(bot_result['mouse_data']),
-        'verification_result': {
-            'success': success,
-            'message': message,
-            'analysis': analysis
-        },
-        'learned_from_humans': analytics['learned_behaviors']['sample_count'],
-        'mimicking_human': bot_result.get('mimicking_human', False)
-    })
-
-@app.route('/api/verify', methods=['POST'])
-def verify_solution():
-    data = request.get_json()
-    captcha_id = data.get('captcha_id')
-    user_path = data.get('path', [])
-    
-    try:
-        if not captcha_id or captcha_id not in session:
-            return jsonify({'success': False, 'message': 'Invalid captcha', 'analysis': {'is_human': False, 'confidence': 0.0}})
-        
-        captcha_data = session[captcha_id]
-        start_time = captcha_data.get('start_time') or captcha_data['created_at']
+        start_time = captcha_session_data.get('start_time') or captcha_session_data['created_at']
         solve_time = time.time() - start_time
         
         # Basic validation
@@ -486,37 +459,75 @@ def verify_solution():
         if path_tuples[-1] != tuple(captcha_data['end']):
             return jsonify({'success': False, 'message': 'Path must end at blue square', 'analysis': {'is_human': False, 'confidence': 0.0}})
         
-        # Check path validity
+        # Check path validity with tolerance
         maze = np.array(captcha_data['maze'])
-        print(f"DEBUG: Path tuples: {path_tuples[:5]}... (showing first 5)")
-        print(f"DEBUG: Maze shape: {maze.shape}")
-        for r, c in path_tuples:
+        
+        # Count wall touches and allow minor ones
+        wall_touches = 0
+        max_allowed_wall_touches = max(3, len(path_tuples) // 10)  # Allow 1 wall touch per 10 steps, minimum 3
+        
+        for i, (r, c) in enumerate(path_tuples):
+            # Check bounds
             if r >= maze.shape[0] or c >= maze.shape[1] or r < 0 or c < 0:
-                print(f"DEBUG: Path point ({r}, {c}) is out of bounds!")
                 return jsonify({'success': False, 'message': 'Path goes out of bounds', 'analysis': {'is_human': False, 'confidence': 0.0}})
+            
+            # Check if path hits wall
             if maze[r, c] != 1:
-                print(f"DEBUG: Path point ({r}, {c}) hits wall! maze[{r}][{c}] = {maze[r, c]}")
-                return jsonify({'success': False, 'message': 'Path goes through walls', 'analysis': {'is_human': False, 'confidence': 0.0}})
+                wall_touches += 1
+                # Allow some wall touches but not too many
+                if wall_touches > max_allowed_wall_touches:
+                    return jsonify({'success': False, 'message': f'Path goes through walls ({wall_touches} wall touches > {max_allowed_wall_touches} allowed)', 'analysis': {'is_human': False, 'confidence': 0.0}})
+        
+        # Success if wall touches are within tolerance
+        if wall_touches > 0:
+            print(f"DEBUG: Path has {wall_touches} wall touches (allowed: {max_allowed_wall_touches})")
         
         # Analyze behavior
         analysis = analyze_and_learn(
-            captcha_data.get('mouse_data', []),
+            captcha_session_data.get('mouse_data', []),
             solve_time,
             path_tuples
         )
         
-        # Update analytics and rate limiting
+        # Update analytics with comprehensive tracking
+        current_time = time.time()
+        
         if analysis['is_human']:
             analytics['human_detected'] += 1
             analytics['successful_verifications'] += 1
             analytics['difficulty_stats'][captcha_data['difficulty']]['success'] += 1
             message = "Human verified - captcha solved successfully!"
+            
+            # Record successful attempt details
+            analytics['recent_events'].append({
+                'type': 'human_verified',
+                'timestamp': current_time,
+                'confidence': analysis['confidence'],
+                'solve_time': solve_time,
+                'path_length': len(path_tuples),
+                'difficulty': captcha_data['difficulty'],
+                'wall_touches': wall_touches if 'wall_touches' in locals() else 0
+            })
+            
             # Record successful attempt for rate limiting
             if hasattr(g, 'client_ip'):
                 rate_limiter.record_successful_attempt(g.client_ip)
         else:
             analytics['bot_detected'] += 1
             message = f"Bot detected: {analysis['reasons'][0] if analysis['reasons'] else 'Unknown'}"
+            
+            # Record bot detection details
+            analytics['recent_events'].append({
+                'type': 'bot_detected',
+                'timestamp': current_time,
+                'confidence': analysis['confidence'],
+                'solve_time': solve_time,
+                'path_length': len(path_tuples),
+                'difficulty': captcha_data['difficulty'],
+                'reasons': analysis['reasons'],
+                'wall_touches': wall_touches if 'wall_touches' in locals() else 0
+            })
+            
             # Record failed attempt for rate limiting
             if hasattr(g, 'client_ip'):
                 was_banned = rate_limiter.record_failed_attempt(g.client_ip)
@@ -540,13 +551,32 @@ def verify_solution():
 
 @app.route('/api/analytics')
 def get_analytics():
+    # Calculate success rates
+    total = analytics['total_attempts']
+    success_rate = (analytics['successful_verifications'] / total * 100) if total > 0 else 0
+    bot_detection_rate = (analytics['bot_detected'] / total * 100) if total > 0 else 0
+    
+    # Recent events (last 20)
+    recent_events = analytics['recent_events'][-20:] if len(analytics['recent_events']) > 20 else analytics['recent_events']
+    
     return jsonify({
         **analytics,
+        'real_time_stats': {
+            'success_rate': round(success_rate, 2),
+            'bot_detection_rate': round(bot_detection_rate, 2),
+            'current_session_count': len([s for s in analytics['recent_events'] if s['type'] in ['human_verified', 'bot_detected']]),
+            'avg_confidence': round(np.mean([e.get('confidence', 0) for e in recent_events]), 2) if recent_events else 0
+        },
         'learning_status': {
             'human_patterns_stored': len(analytics['human_patterns']),
             'behaviors_learned': analytics['learned_behaviors']['sample_count'],
             'avg_human_solve_time': analytics['learned_behaviors']['avg_solve_time'],
             'avg_human_velocity_variance': analytics['learned_behaviors']['avg_velocity_variance']
+        },
+        'recent_events': recent_events,
+        'performance_metrics': {
+            'avg_solve_time': analytics['performance_metrics'].get('captcha_generation_time', []),
+            'database_queries_today': analytics['performance_metrics'].get('database_queries', 0)
         }
     })
 
