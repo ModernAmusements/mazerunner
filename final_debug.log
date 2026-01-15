@@ -1,0 +1,59 @@
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+ * Serving Flask app 'working_maze_server'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 237-840-345
+127.0.0.1 - - [15/Jan/2026 09:43:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:43:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:43:36] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:43:46] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:43:56] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:06] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:16] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:26] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:36] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:38] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:38] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 09:44:38] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:38] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Jan/2026 09:44:38] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+Starting Maze Captcha Server...
+Open http://127.0.0.1:8080 in your browser
+Using in-memory storage for captcha data
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Analytics request: successes=0, bots=0
+Generated captcha maze_1768466678_9125, total stored: 7
+DEBUG: Original user_path length: 118
+DEBUG: First few points: [{'x': 55, 'y': 54}, {'x': 60, 'y': 54}, {'x': 64, 'y': 54}, {'x': 69, 'y': 54}, {'x': 75, 'y': 54}]
+DEBUG: Successfully converted point 0: {'x': 55, 'y': 54} -> [55, 54]
+DEBUG: Successfully converted point 1: {'x': 60, 'y': 54} -> [60, 54]
+DEBUG: Successfully converted point 2: {'x': 64, 'y': 54} -> [64, 54]
+DEBUG: Final path_tuples length: 118
+=== VERIFICATION DEBUG ===
+Raw path length: 118
+Raw path start: [55, 54]
+Raw path end: [360, 350]
+Expected start: [1, 1]
+Expected end: [16, 16]
+Converted start: [1, 1]
+Converted end: [17, 16]
+===================
+127.0.0.1 - - [15/Jan/2026 09:44:48] "POST /api/verify HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:48] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:48] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:44:58] "GET /api/analytics HTTP/1.1" 200 -
+127.0.0.1 - - [15/Jan/2026 09:45:08] "GET /api/analytics HTTP/1.1" 200 -

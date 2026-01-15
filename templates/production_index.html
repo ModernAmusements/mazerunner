@@ -581,18 +581,29 @@
                 return;
             }
             
+            console.log('=== VERIFICATION ATTEMPT ===');
+            console.log('Path length:', userPath.length);
+            console.log('Path points:', userPath);
+            console.log('Expected start:', currentCaptcha.canvas_start);
+            console.log('Expected end:', currentCaptcha.canvas_end);
+            
             if (userPath.length < 2) {
-                showStatus('Please draw a path from start to end.', 'error');
+                showStatus('Please draw a path from start to end. Current path: ' + userPath.length + ' points', 'error');
                 return;
             }
+            
+            // Quick client-side validation
+            var firstPoint = userPath[0];
+            var lastPoint = userPath[userPath.length - 1];
+            var startMaze = [(firstPoint[0] - 20) / 20, (firstPoint[1] - 20) / 20];
+            var endMaze = [(lastPoint[0] - 20) / 20, (lastPoint[1] - 20) / 20];
+            
+            console.log('Client conversion - Start:', startMaze, 'End:', endMaze);
+            console.log('Expected maze - Start:', currentCaptcha.start, 'End:', currentCaptcha.end);
             
             showStatus('Analyzing your solution...', 'info');
             
             // Send raw canvas coordinates, let server handle conversion
-            console.log('Sending path:', userPath);
-            console.log('Expected start:', currentCaptcha.canvas_start);
-            console.log('Expected end:', currentCaptcha.canvas_end);
-            
             fetch('/api/verify', {
                 method: 'POST',
                 headers: {
