@@ -6,6 +6,7 @@
     <title>Production Maze Captcha System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
     <style>
         * {
             margin: 0;
@@ -345,14 +346,7 @@
                     <button onclick="simulateBot()" class="btn-bot">Simulate Bot</button>
                 </div>
                 
-                <div class="verify-section">
-                    <div class="verify-options">
-                        <button onclick="simulateBot('perfect')" class="btn-bot-option">Smart Bot</button>
-                        <button onclick="simulateBot('wall_ignorant')" class="btn-bot-option">Wall-Ignorant Bot</button>
-                        <button onclick="simulateBot('straight_line')" class="btn-bot-option">Straight Line Bot</button>
-                        <button onclick="simulateBot('human_like')" class="btn-bot-option">Human-Like Bot</button>
-                    </div>
-                </div>
+
                 
                 <div id="status" class="status hidden"></div>
             </section>

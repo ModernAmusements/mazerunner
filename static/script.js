@@ -1,0 +1,888 @@
+// Global variables
+var currentCaptcha = null;
+var userPath = [];
+var isDrawing = false;
+var mazeImage = null;
+var botPath = [];
+var analyticsData = null;
+var performanceChart = null;
+var learningChart = null;
+var pathLengthChart = null;
+var confidenceChart = null;
+var hourlyChart = null;
+
+// Canvas setup
+var canvas = document.getElementById('mazeCanvas');
+var ctx = canvas.getContext('2d');
+
+// Initialize charts
+function initCharts() {
+    var perfCtx = document.getElementById('performanceChart');
+    if (perfCtx) {
+        performanceChart = new Chart(perfCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Successful', 'Failed', 'Bot Detected'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#4ade80', '#f87171', '#fbbf24'],
+                    borderColor: ['#22c55e', '#dc2626', '#f59e0b'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+}
+
+// Load new captcha
+function loadNewCaptcha() {
+    fetch('/api/captcha?difficulty=medium', {
+        credentials: 'same-origin'
+    })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(captcha) {
+            if (captcha.error) {
+                showStatus('Error: ' + captcha.error, 'error');
+                return;
+            }
+            
+            console.log('=== CAPTCHA LOADED ===');
+            console.log('Captcha ID:', captcha.captcha_id);
+            console.log('Captcha start:', captcha.start);
+            console.log('Captcha end:', captcha.end);
+            
+            currentCaptcha = captcha;
+            // Convert maze coordinates to canvas coordinates for drawing indicators
+            if (currentCaptcha.start && currentCaptcha.end) {
+                currentCaptcha.canvas_start = [
+                    currentCaptcha.start[1] * 20 + 10,  // col to x with center offset
+                    currentCaptcha.start[0] * 20 + 10   // row to y with center offset
+                ];
+                currentCaptcha.canvas_end = [
+                    currentCaptcha.end[1] * 20 + 10,    // col to x with center offset
+                    currentCaptcha.end[0] * 20 + 10     // row to y with center offset
+                ];
+                console.log('Canvas start calculated:', currentCaptcha.canvas_start);
+                console.log('Canvas end calculated:', currentCaptcha.canvas_end);
+                console.log('Maze start from server:', currentCaptcha.start);
+                console.log('Maze end from server:', currentCaptcha.end);
+            }
+            userPath = [];
+            botPath = [];
+            isDrawing = false;
+            
+            // Load maze image
+            mazeImage = new Image();
+            mazeImage.onload = function() {
+                console.log('Maze image loaded');
+                drawMaze();
+                // Start and end indicators are already drawn by the server in the maze image
+                showStatus('New captcha loaded! Draw a path from green to red.', 'info');
+            };
+            mazeImage.src = captcha.maze_image;
+        })
+        .catch(function(error) {
+            showStatus('Error loading captcha. Please try again.', 'error');
+        });
+}
+
+// Draw maze
+function drawMaze() {
+    if (!mazeImage) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mazeImage, 0, 0);
+    
+    // Draw user path
+    if (userPath.length > 0) {
+        ctx.strokeStyle = '#0066ff';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(userPath[0].x, userPath[0].y);
+        
+        for (var i = 1; i < userPath.length; i++) {
+            ctx.lineTo(userPath[i].x, userPath[i].y);
+        }
+        
+        ctx.stroke();
+    }
+    
+    // Draw bot path if exists
+    if (typeof botPath !== 'undefined' && botPath.length > 0) {
+        console.log('Drawing bot path in drawMaze():', botPath);
+        console.log('Bot path length:', botPath.length);
+        
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.setLineDash([5, 5]);
+        
+        // Check if botPath is already in canvas coordinates or needs conversion
+        var firstPoint = botPath[0];
+        console.log('First bot point:', firstPoint);
+        
+        // Check if points are already canvas coordinates (x,y) or maze coordinates (row,col)
+        if (firstPoint.length >= 2 && firstPoint[0] > 20 && firstPoint[1] > 20) {
+            // Already canvas coordinates, use directly
+            console.log('Using canvas coordinates directly');
+            var startX = firstPoint[0];
+            var startY = firstPoint[1];
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            
+            for (var i = 1; i < botPath.length; i++) {
+                var x = botPath[i][0];
+                var y = botPath[i][1];
+                ctx.lineTo(x, y);
+            }
+        } else {
+            // Maze coordinates, convert to canvas coordinates
+            console.log('Converting maze coordinates to canvas');
+            var startX = botPath[0][1] * 20 + 20; // col to x with offset
+            var startY = botPath[0][0] * 20 + 20; // row to y with offset
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            
+            for (var i = 1; i < botPath.length; i++) {
+                var x = botPath[i][1] * 20 + 20; // col to x with offset
+                var y = botPath[i][0] * 20 + 20; // row to y with offset
+                ctx.lineTo(x, y);
+            }
+        }
+        
+        ctx.stroke();
+        ctx.setLineDash([]);
+        console.log('Bot path drawing completed');
+    }
+}
+
+// Draw start and end indicators
+function drawStartEnd() {
+    if (!currentCaptcha) return;
+    
+    // Save current context state
+    ctx.save();
+    
+    // Draw a circle around start
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(currentCaptcha.canvas_start[0] + 10, currentCaptcha.canvas_start[1] + 10, 15, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    // Draw "S" text in start
+    ctx.fillStyle = '#00ff00';
+    ctx.font = 'bold 12px Arial';
+    ctx.fillText('S', currentCaptcha.canvas_start[0] + 6, currentCaptcha.canvas_start[1] + 15);
+    
+    // Draw a circle around end
+    ctx.strokeStyle = '#ff0000';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(currentCaptcha.canvas_end[0] + 10, currentCaptcha.canvas_end[1] + 10, 15, 0, 2 * Math.PI);
+    ctx.stroke();
+    
+    // Draw "E" text in end
+    ctx.fillStyle = '#ff0000';
+    ctx.fillText('E', currentCaptcha.canvas_end[0] + 6, currentCaptcha.canvas_end[1] + 15);
+    
+    // Restore context state
+    ctx.restore();
+}
+
+// Canvas mouse events
+canvas.addEventListener('mousedown', function(e) {
+    if (!currentCaptcha) {
+        console.log('No current captcha loaded');
+        return;
+    }
+    
+    var rect = canvas.getBoundingClientRect();
+    var x = Math.floor(e.clientX - rect.left);
+    var y = Math.floor(e.clientY - rect.top);
+    
+    console.log('=== MOUSE DOWN ===');
+    console.log('MouseDown at:', x, y);
+    console.log('Current captcha ID:', currentCaptcha.captcha_id);
+    console.log('Expected start:', currentCaptcha.canvas_start);
+    
+    isDrawing = true;
+    userPath = [{x: x, y: y}];
+    drawMaze();
+    
+    // Start tracking mouse data for this captcha
+    console.log('🔍 STARTING MOUSE TRACKING FOR CAPTCHA:', currentCaptcha.captcha_id);
+    
+    // Simple direct approach - no delays, no complexity
+    fetch('/api/track', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            captcha_id: currentCaptcha.captcha_id,
+            x: x,
+            y: y,
+            timestamp: Date.now() / 1000,
+            event: 'mousedown'
+        })
+    }).then(function(response) {
+        console.log('🔍 TRACK RESPONSE:', response.status, response.statusText);
+        
+        if (response.ok) {
+            console.log('✅ Mouse tracking SUCCESS for captcha:', currentCaptcha.captcha_id);
+        } else {
+            console.log('❌ Mouse tracking FAILED - Status:', response.status);
+        }
+    }).catch(function(error) {
+        console.error('❌ Mouse tracking ERROR:', error.message || error);
+    });
+});
+
+canvas.addEventListener('mousemove', function(e) {
+    if (!isDrawing) return;
+    
+    var rect = canvas.getBoundingClientRect();
+    var x = Math.floor(e.clientX - rect.left);
+    var y = Math.floor(e.clientY - rect.top);
+    
+    var lastPoint = userPath[userPath.length - 1];
+    if (Math.abs(x - lastPoint.x) > 3 || Math.abs(y - lastPoint.y) > 3) {
+        userPath.push({x: x, y: y});
+        drawMaze();
+        
+        // Track mouse movement during drawing
+        if (currentCaptcha && currentCaptcha.captcha_id) {
+            fetch('/api/track', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    captcha_id: currentCaptcha.captcha_id,
+                    x: x,
+                    y: y,
+                    timestamp: Date.now() / 1000,
+                    event: 'move'
+                })
+            }).catch(function(error) {
+                // Don't log every mouse move to avoid spam, but track periodically
+            });
+        }
+    }
+});
+
+canvas.addEventListener('mouseup', function() {
+    isDrawing = false;
+    console.log('MouseUp - Final path length:', userPath.length);
+    console.log('Path points:', userPath.slice(0, 3), '...', userPath.slice(-3));
+    
+    // Track mouse up event
+    if (currentCaptcha && currentCaptcha.captcha_id) {
+        fetch('/api/track', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                captcha_id: currentCaptcha.captcha_id,
+                x: userPath[userPath.length - 1].x,
+                y: userPath[userPath.length - 1].y,
+                timestamp: Date.now() / 1000,
+                event: 'mouseup'
+            })
+        }).catch(function(error) {
+            console.error('MouseUp tracking error:', error);
+        });
+    }
+});
+
+canvas.addEventListener('mouseleave', function() {
+    isDrawing = false;
+});
+
+// Clear path
+function clearPath() {
+    userPath = [];
+    botPath = [];
+    isDrawing = false;
+    drawMaze();
+    showStatus('Path cleared. Start drawing from green square.', 'info');
+}
+
+// Verify solution
+function verifySolution() {
+    if (!currentCaptcha) {
+        console.log('❌ No current captcha loaded');
+        showStatus('Please load a captcha first.', 'error');
+        return;
+    }
+    
+    console.log('=== VERIFICATION ATTEMPT ===');
+    console.log('Current captcha ID:', currentCaptcha.captcha_id);
+    console.log('Current captcha start:', currentCaptcha.start);
+    console.log('Current captcha end:', currentCaptcha.end);
+    console.log('Path length:', userPath.length);
+    console.log('First 3 path points:', userPath.slice(0, 3));
+    console.log('Last 3 path points:', userPath.slice(-3));
+    console.log('Expected start:', currentCaptcha.canvas_start);
+    console.log('Expected end:', currentCaptcha.canvas_end);
+    
+    if (userPath.length < 2) {
+        showStatus('Please draw a path from start to end. Current path: ' + userPath.length + ' points', 'error');
+        return;
+    }
+    
+    // Quick client-side validation
+    var firstPoint = userPath[0];
+    var lastPoint = userPath[userPath.length - 1];
+    
+    console.log('First point for conversion:', firstPoint);
+    console.log('Raw first point:', {x: firstPoint.x, y: firstPoint.y});
+    
+    // Use same Math.round() logic as actual path conversion for consistency
+    var startMaze = [Math.round((firstPoint.y - 10) / 20), Math.round((firstPoint.x - 10) / 20)];
+    var endMaze = [Math.round((lastPoint.y - 10) / 20), Math.round((lastPoint.x - 10) / 20)];
+    
+    console.log('First point raw:', firstPoint);
+    console.log('First point x:', firstPoint.x, 'y:', firstPoint.y);
+    console.log('Expected maze start (row,col):', currentCaptcha.start);
+    console.log('Converted maze start (row,col):', startMaze);
+    console.log('POINT - Check conversion calculation:');
+    console.log('Coordinate conversion - Start:', startMaze, 'End:', endMaze);
+    
+    console.log('Client conversion - Start:', startMaze, 'End:', endMaze);
+    console.log('Expected maze - Start:', currentCaptcha.start, 'End:', currentCaptcha.end);
+    
+    showStatus('Analyzing your solution...', 'info');
+    
+    // Convert path to array format for server
+    var pathArray = userPath.map(function(point) {
+        var mazeRow = Math.round((point.y - 10) / 20);
+        var mazeCol = Math.round((point.x - 10) / 20);
+        return [mazeRow, mazeCol];
+    });
+    
+    console.log('Sending path to server:', pathArray.slice(0, 5), '...', pathArray.slice(-5));
+    
+    fetch('/api/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            captcha_id: currentCaptcha.captcha_id,
+            path: pathArray
+        })
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            return response.json().then(function(errorData) {
+                throw new Error(errorData.message || 'HTTP ' + response.status);
+            });
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            showStatus('✅ ' + data.message + ' (Confidence: ' + (data.confidence * 100).toFixed(1) + '%)', 'success');
+            updateAnalytics();
+            // Clear current captcha after successful verification
+            currentCaptcha = null;
+            userPath = [];
+        } else {
+            showStatus('❌ Error: ' + data.message + ' (Confidence: ' + (data.confidence * 100).toFixed(1) + '%)', 'error');
+            updateAnalytics();
+        }
+    })
+    .catch(function(error) {
+        console.error('Verification error:', error);
+        if (error.message.includes('expired') || error.message.includes('refresh')) {
+            showStatus('⚠️ CAPTCHA expired. Loading new one...', 'warning');
+            loadNewCaptcha();
+        } else {
+            showStatus('Error verifying solution: ' + error.message, 'error');
+        }
+        updateAnalytics();
+    });
+}
+
+// Simulate bot
+function simulateBot() {
+    console.log('simulateBot called, currentCaptcha:', currentCaptcha);
+    if (!currentCaptcha) {
+        showStatus('Please load a captcha first.', 'error');
+        return;
+    }
+    
+    console.log('Attempting bot simulation with captcha_id:', currentCaptcha.captcha_id);
+    showStatus('Simulating bot behavior...', 'info');
+    
+    fetch('/api/bot-simulate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            captcha_id: currentCaptcha.captcha_id
+        })
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+        }
+        return response.json();
+    })
+    .catch(function(error) {
+        console.error('Fetch error:', error);
+        showStatus('Network error: ' + error.message, 'error');
+        throw error;
+    })
+    .then(function(result) {
+        console.log('Bot simulation response:', result);
+        
+        // Handle the actual response structure from working_maze_server.py
+        if (result.analysis) {
+            var isHuman = result.analysis.is_human;
+            var detected = isHuman ? 'Human' : 'Bot';
+            var confidence = (result.analysis.confidence * 100).toFixed(1);
+            
+            showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', isHuman ? 'success' : 'error');
+            
+            // Update captcha with new data for drawing
+            currentCaptcha = result;
+            // Convert maze coordinates to canvas coordinates
+            if (currentCaptcha.start && currentCaptcha.end) {
+                currentCaptcha.canvas_start = [
+                    currentCaptcha.start[1] * 20 + 10,  // col to x with center offset
+                    currentCaptcha.start[0] * 20 + 10   // row to y with center offset
+                ];
+                currentCaptcha.canvas_end = [
+                    currentCaptcha.end[1] * 20 + 10,    // col to x with center offset
+                    currentCaptcha.end[0] * 20 + 10     // row to y with center offset
+                ];
+            }
+            
+            // Draw bot path if available
+            if (result.bot_path && result.bot_path.length > 0) {
+                console.log('Drawing bot path:', result.bot_path);
+                // Keep bot path as canvas coordinates for direct drawing
+                botPath = result.bot_path;
+                console.log('Bot path set for drawing:', botPath);
+                
+                // Load the new maze image and draw bot path
+                mazeImage = new Image();
+                mazeImage.onload = function() {
+                    drawMaze();
+                };
+                mazeImage.src = result.maze_image;
+            }
+        } else if (result.error) {
+            showStatus('Bot simulation failed: ' + result.error, 'error');
+        } else {
+            console.log('Unexpected response structure:', result);
+            showStatus('Bot simulation failed - unexpected response', 'error');
+        }
+        
+        updateAnalytics();
+    })
+    .catch(function(error) {
+        showStatus('Error simulating bot. Please try again.', 'error');
+        console.error('Error simulating bot:', error);
+    });
+}
+
+// Update analytics with comprehensive display
+function updateAnalytics() {
+    console.log('Updating analytics...');
+    fetch('/api/analytics')
+        .then(function(response) {
+            console.log('Analytics response status:', response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('Analytics data received:', data);
+            analyticsData = data;
+            
+            // Update basic stats with error checking
+            var total = (data.successful_verifications || 0) + (data.bot_detected || 0);
+            document.getElementById('totalAttempts').textContent = total;
+            
+            // Update successful verifications if element exists
+            var successElement = document.getElementById('successful_verifications');
+            if (successElement) {
+                successElement.textContent = data.successful_verifications || 0;
+            }
+            
+            document.getElementById('botDetected').textContent = data.bot_detected || 0;
+            document.getElementById('patternsLearned').textContent = data.learning_status ? data.learning_status.behaviors_learned : 0;
+            document.getElementById('learnedPatterns').textContent = data.human_patterns ? data.human_patterns.length : 0;
+            
+            // Calculate success rate
+            var successRate = total > 0 ? 
+                ((data.successful_verifications / total) * 100).toFixed(1) : 0;
+            var successRateElement = document.getElementById('successRate');
+            if (successRateElement) {
+                successRateElement.textContent = successRate + '%';
+            }
+            
+            // Update average solve time
+            var avgTime = data.learning_status ? data.learning_status.avg_human_solve_time : 0;
+            var avgTimeElement = document.getElementById('avgSolveTime');
+            if (avgTimeElement) {
+                avgTimeElement.textContent = avgTime.toFixed(1) + 's';
+            }
+            
+            // Update additional metrics with safe checks
+            var wallToleranceElement = document.getElementById('wallTouchTolerance');
+            if (wallToleranceElement) {
+                wallToleranceElement.textContent = 'Max 8 wall touches';
+            }
+            
+            var sessionElement = document.getElementById('sessionCount');
+            if (sessionElement) {
+                sessionElement.textContent = data.real_time_stats ? data.real_time_stats.current_session_count : 0;
+            }
+            
+            var confidenceElement = document.getElementById('avgConfidence');
+            if (confidenceElement) {
+                confidenceElement.textContent = data.real_time_stats ? (data.real_time_stats.avg_confidence * 100).toFixed(1) + '%' : '0%';
+            }
+            
+            // Update performance chart
+            if (performanceChart) {
+                performanceChart.data.datasets[0].data = [
+                    data.successful_verifications || 0,
+                    total - (data.successful_verifications || 0) - (data.bot_detected || 0),
+                    data.bot_detected || 0
+                ];
+                performanceChart.update();
+            }
+            
+            // Update learning chart
+            if (learningChart) {
+                learningChart.data.datasets[0].data = [
+                    data.learning_status ? data.learning_status.behaviors_learned : 0,
+                    data.learning_status ? data.learning_status.human_patterns_stored : 0,
+                    data.avg_path_length || 0
+                ];
+                learningChart.update();
+            }
+            
+            // Update path length histogram
+            if (pathLengthChart && data.path_length_histogram) {
+                pathLengthChart.data.labels = data.path_length_histogram.bins;
+                pathLengthChart.data.datasets[0].data = data.path_length_histogram.counts;
+                pathLengthChart.update();
+            }
+            
+            // Update confidence histogram
+            if (confidenceChart && data.confidence_histogram) {
+                confidenceChart.data.labels = data.confidence_histogram.bins;
+                confidenceChart.data.datasets[0].data = data.confidence_histogram.counts;
+                confidenceChart.update();
+            }
+            
+            // Update hourly activity chart
+            if (hourlyChart && data.hourly_stats && Array.isArray(data.hourly_stats)) {
+                var hours = data.hourly_stats.map(function(item) { return item.hour + ':00'; });
+                var humanData = data.hourly_stats.map(function(item) { return item.human; });
+                var botData = data.hourly_stats.map(function(item) { return item.bot; });
+                
+                hourlyChart.data.labels = hours;
+                hourlyChart.data.datasets[0].data = humanData;
+                hourlyChart.data.datasets[1].data = botData;
+                hourlyChart.update();
+            }
+            
+            // Update average displays
+            if (data.avg_path_length !== undefined) {
+                var avgPathElement = document.getElementById('avgPathLength');
+                if (avgPathElement) {
+                    avgPathElement.textContent = data.avg_path_length.toFixed(1);
+                }
+            }
+            
+            if (data.avg_confidence !== undefined) {
+                var avgConfElement = document.getElementById('avgConfidence');
+                if (avgConfElement) {
+                    avgConfElement.textContent = (data.avg_confidence * 100).toFixed(1) + '%';
+                }
+            }
+            
+            // Update recent events display
+            if (data.recent_events && Array.isArray(data.recent_events) && data.recent_events.length > 0) {
+                var recentEventsHtml = '';
+                data.recent_events.slice(-10).reverse().forEach(function(event) {
+                    var time = event.timestamp ? new Date(event.timestamp * 1000).toLocaleTimeString() : 'Unknown time';
+                    var eventType = event.type || 'unknown';
+                    var eventClass = eventType === 'human_verified' ? 'human-event' : 
+                                     eventType === 'bot_detected' ? 'bot-event' : 'system-event';
+                    var confidence = event.confidence !== undefined ? (event.confidence * 100).toFixed(1) : '0.0';
+                    
+                    recentEventsHtml += '<div class="event-item ' + eventClass + '">';
+                    recentEventsHtml += '<span class="event-time">' + time + '</span>';
+                    recentEventsHtml += '<span class="event-type">' + (eventType || 'UNKNOWN').replace('_', ' ').toUpperCase() + '</span>';
+                    recentEventsHtml += '<span class="event-confidence">Confidence: ' + confidence + '%</span>';
+                    if (event.reasons && Array.isArray(event.reasons) && event.reasons.length > 0) {
+                        recentEventsHtml += '<div class="event-reasons">Reasons: ' + event.reasons.join(', ') + '</div>';
+                    }
+                    if (event.wall_touches !== undefined) {
+                        recentEventsHtml += '<div class="event-wall">Wall touches: ' + event.wall_touches + '</div>';
+                    }
+                    recentEventsHtml += '</div>';
+                });
+                document.getElementById('recentEvents').innerHTML = recentEventsHtml;
+            }
+            
+            console.log('Analytics updated successfully');
+        })
+        .catch(function(error) {
+            console.error('Error updating analytics:', error);
+        });
+}
+
+// Show status message
+function showStatus(message, type) {
+    var statusDiv = document.getElementById('status');
+    statusDiv.textContent = message;
+    statusDiv.className = 'status ' + type;
+    statusDiv.classList.remove('hidden');
+    
+    if (type === 'info') {
+        setTimeout(function() {
+            if (statusDiv.classList.contains('info')) {
+                statusDiv.classList.add('hidden');
+            }
+        }, 5000);
+    }
+}
+
+// Initialize charts with error checking
+function initCharts() {
+    console.log('Initializing charts...');
+    
+    // Performance chart (doughnut)
+    var performanceCtx = document.getElementById('performanceChart');
+    if (!performanceCtx) {
+        console.error('Performance chart canvas not found!');
+        return;
+    }
+    
+    try {
+        performanceChart = new Chart(performanceCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Successful', 'Failed', 'Bot Detected'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: [
+                        'rgba(74, 222, 128, 0.8)',
+                        'rgba(248, 113, 113, 0.8)',
+                        'rgba(249, 115, 115, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(74, 222, 128, 1)',
+                        'rgba(248, 113, 113, 1)',
+                        'rgba(249, 115, 115, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        console.log('Performance chart initialized');
+    } catch (error) {
+        console.error('Error initializing performance chart:', error);
+    }
+    
+    // Learning progress chart (bar)
+    var learningCtx = document.getElementById('learningChart');
+    if (!learningCtx) {
+        console.error('Learning chart canvas not found!');
+        return;
+    }
+    
+    try {
+        learningChart = new Chart(learningCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Behaviors Learned', 'Patterns Stored', 'Avg Solve Time'],
+                datasets: [{
+                    label: 'Learning Progress',
+                    data: [0, 0, 0],
+                    backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                    borderColor: 'rgba(74, 222, 128, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        console.log('Learning chart initialized');
+    } catch (error) {
+        console.error('Error initializing learning chart:', error);
+    }
+    
+    // Initialize histogram charts
+    try {
+        // Path length histogram
+        var pathLengthCtx = document.getElementById('pathLengthHistogram');
+        if (pathLengthCtx) {
+            pathLengthChart = new Chart(pathLengthCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Path Length Frequency',
+                        data: [],
+                        backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                        borderColor: 'rgba(74, 222, 128, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Frequency'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Path Length Range'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Confidence histogram
+        var confidenceCtx = document.getElementById('confidenceHistogram');
+        if (confidenceCtx) {
+            confidenceChart = new Chart(confidenceCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Confidence Score Frequency',
+                        data: [],
+                        backgroundColor: 'rgba(248, 113, 113, 0.6)',
+                        borderColor: 'rgba(248, 113, 113, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Frequency'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Confidence Range'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Hourly activity chart
+        var hourlyCtx = document.getElementById('hourlyChart');
+        if (hourlyCtx) {
+            hourlyChart = new Chart(hourlyCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Human Users',
+                        data: [],
+                        borderColor: 'rgba(74, 222, 128, 1)',
+                        backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                        fill: true
+                    }, {
+                        label: 'Bot Attempts',
+                        data: [],
+                        borderColor: 'rgba(248, 113, 113, 1)',
+                        backgroundColor: 'rgba(248, 113, 113, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Count'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Hour of Day'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        console.log('Histogram charts initialized');
+    } catch (error) {
+        console.error('Error initializing histogram charts:', error);
+    }
+}
+
+// Initialize page
+window.onload = function() {
+    console.log('Page fully loaded');
+    initCharts();
+    loadNewCaptcha();
+    updateAnalytics();
+    
+    // Update analytics every 10 seconds
+    setInterval(updateAnalytics, 10000);
+}
