@@ -85,7 +85,7 @@ class SimpleMazeCaptcha:
         conn.close()
         logger.info("Database initialized")
     
-    def generate_maze(self, size=15):
+    def generate_maze(self, size=11):
         """Simple maze generation"""
         # Initialize maze with walls
         maze = np.zeros((size, size), dtype=np.uint8)
