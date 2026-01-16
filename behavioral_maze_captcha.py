@@ -511,11 +511,91 @@ class SimpleMazeCaptcha:
                 
                 conn.close()
                 
+                # Get path length distribution
+                try:
+                    cursor.execute('''
+                        SELECT LENGTH(coordinates) as path_length, COUNT(*) 
+                        FROM user_paths 
+                        WHERE is_human = 1
+                        GROUP BY path_length
+                        ORDER BY path_length
+                    ''')
+                    path_lengths = dict(cursor.fetchall())
+                except:
+                    path_lengths = {}
+                
+                # Get confidence score distribution
+                try:
+                    cursor.execute('''
+                        SELECT CASE 
+                            WHEN confidence_score >= 0.8 THEN 'High'
+                            WHEN confidence_score >= 0.5 THEN 'Medium'
+                            ELSE 'Low'
+                        END as confidence_range, COUNT(*) 
+                        FROM user_paths 
+                        WHERE is_human = 1 AND confidence_score IS NOT NULL
+                        GROUP BY confidence_range
+                    ''')
+                    confidence_scores = dict(cursor.fetchall())
+                except:
+                    confidence_scores = {}
+                
+                # Get hourly activity (last 24 hours)
+                try:
+                    cursor.execute('''
+                        SELECT strftime('%H', created_at) as hour, COUNT(*) 
+                        FROM user_paths 
+                        WHERE created_at >= datetime('now', '-24 hours')
+                        GROUP BY hour
+                        ORDER BY hour
+                    ''')
+                    hourly_activity = dict(cursor.fetchall())
+                except:
+                    hourly_activity = {}
+                
+                conn.close()
+                
+                # Prepare path length histogram data
+                if path_lengths:
+                    # Group path lengths into ranges (coordinates are JSON strings, much longer)
+                    path_ranges = {'0-200': 0, '201-400': 0, '401-600': 0, '601-800': 0, '800+': 0}
+                    for length, count in path_lengths.items():
+                        length = int(length)
+                        if length <= 200:
+                            path_ranges['0-200'] += count
+                        elif length <= 400:
+                            path_ranges['201-400'] += count
+                        elif length <= 600:
+                            path_ranges['401-600'] += count
+                        elif length <= 800:
+                            path_ranges['601-800'] += count
+                        else:
+                            path_ranges['800+'] += count
+                else:
+                    path_ranges = {'0-200': 0, '201-400': 0, '401-600': 0, '601-800': 0, '800+': 0}
+                
+                # Prepare confidence histogram data (ensure all ranges exist)
+                conf_ranges = {'Low': 0, 'Medium': 0, 'High': 0}
+                for conf_type, count in confidence_scores.items():
+                    if conf_type in conf_ranges:
+                        conf_ranges[conf_type] = count
+                    else:
+                        conf_ranges['Low'] = count  # Default uncategorized values
+                
+                # Prepare hourly activity data (fill missing hours)
+                hour_ranges = {}
+                for hour in range(24):
+                    hour_key = str(hour).zfill(2)
+                    hour_ranges[hour_key] = hourly_activity.get(hour_key, 0)
+                
                 return jsonify({
                     'total_attempts': total_attempts,
                     'human_detected': human_count,
                     'bot_detected': bot_count,
                     'success_rate': round(success_rate, 2),
+                    'path_length_distribution': path_ranges,
+                    'confidence_distribution': conf_ranges,
+                    'hourly_activity': hour_ranges,
                     'timestamp': datetime.now().isoformat()
                 })
                 

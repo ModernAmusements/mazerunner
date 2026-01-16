@@ -1017,29 +1017,35 @@
                     }
                     
                     // Update path length histogram
-                    if (pathLengthChart && data.path_length_histogram) {
-                        pathLengthChart.data.labels = data.path_length_histogram.bins;
-                        pathLengthChart.data.datasets[0].data = data.path_length_histogram.counts;
+                    if (pathLengthChart && data.path_length_distribution) {
+                        var pathLabels = Object.keys(data.path_length_distribution);
+                        var pathData = Object.values(data.path_length_distribution);
+                        pathLengthChart.data.labels = pathLabels;
+                        pathLengthChart.data.datasets[0].data = pathData;
                         pathLengthChart.update();
+                        console.log('Path length chart updated:', pathLabels, pathData);
                     }
                     
                     // Update confidence histogram
-                    if (confidenceChart && data.confidence_histogram) {
-                        confidenceChart.data.labels = data.confidence_histogram.bins;
-                        confidenceChart.data.datasets[0].data = data.confidence_histogram.counts;
+                    if (confidenceChart && data.confidence_distribution) {
+                        var confLabels = Object.keys(data.confidence_distribution);
+                        var confData = Object.values(data.confidence_distribution);
+                        confidenceChart.data.labels = confLabels;
+                        confidenceChart.data.datasets[0].data = confData;
                         confidenceChart.update();
+                        console.log('Confidence chart updated:', confLabels, confData);
                     }
                     
                     // Update hourly activity chart
-                    if (hourlyChart && data.hourly_stats && Array.isArray(data.hourly_stats)) {
-                        var hours = data.hourly_stats.map(function(item) { return item.hour + ':00'; });
-                        var humanData = data.hourly_stats.map(function(item) { return item.human; });
-                        var botData = data.hourly_stats.map(function(item) { return item.bot; });
+                    if (hourlyChart && data.hourly_activity) {
+                        var hours = Object.keys(data.hourly_activity).map(function(h) { return h + ':00'; });
+                        var hourData = Object.values(data.hourly_activity);
                         
                         hourlyChart.data.labels = hours;
-                        hourlyChart.data.datasets[0].data = humanData;
-                        hourlyChart.data.datasets[1].data = botData;
+                        hourlyChart.data.datasets[0].data = hourData;
+                        hourlyChart.data.datasets[1].data = hourData.map(function() { return 0; }); // No bot data yet
                         hourlyChart.update();
+                        console.log('Hourly chart updated with', hours.length, 'hours');
                     }
                     
                     // Update average displays
