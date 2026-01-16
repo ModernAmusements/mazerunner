@@ -11,9 +11,12 @@ numpy==2.4.1
 # Security (optional, for production SSL)
 cryptography==43.0.3
 
-# Development and Testing (optional)
+# Development and Testing
 pytest==8.3.3
 requests==2.32.3
 
 # Monitoring (optional)
 prometheus-client==0.21.0
+
+# System monitoring
+psutil==6.1.0

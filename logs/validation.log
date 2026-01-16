@@ -1,0 +1,61 @@
+2026-01-16 11:51:13,052 - INFO - 🚀 Starting Behavioral Maze CAPTCHA System Validation
+2026-01-16 11:51:13,052 - INFO - ============================================================
+2026-01-16 11:51:13,052 - INFO - 🐍 Checking Python dependencies...
+2026-01-16 11:51:13,083 - INFO - ✅ numpy imported successfully
+2026-01-16 11:51:13,124 - INFO - ✅ cv2 imported successfully
+2026-01-16 11:51:13,206 - INFO - ✅ flask imported successfully
+2026-01-16 11:51:13,206 - INFO - ✅ sqlite3 imported successfully
+2026-01-16 11:51:13,206 - INFO - ✅ hashlib imported successfully
+2026-01-16 11:51:13,206 - INFO - ✅ json imported successfully
+2026-01-16 11:51:13,207 - INFO - ✅ math imported successfully
+2026-01-16 11:51:13,207 - INFO - ✅ random imported successfully
+2026-01-16 11:51:13,207 - INFO - ✅ time imported successfully
+2026-01-16 11:51:13,207 - INFO - ✅ datetime imported successfully
+2026-01-16 11:51:13,207 - INFO - ✅ collections imported successfully
+2026-01-16 11:51:13,207 - INFO - 🔍 Checking required ports...
+2026-01-16 11:51:13,207 - INFO - ✅ Port 8080 is available
+2026-01-16 11:51:13,207 - INFO - 📁 Checking filesystem permissions...
+2026-01-16 11:51:13,207 - INFO - ✅ Directory logs is writable
+2026-01-16 11:51:13,208 - INFO - ✅ Directory templates is writable
+2026-01-16 11:51:13,208 - ERROR - ❌ Missing file: requirements.txt
+2026-01-16 11:51:13,208 - INFO - 💾 Checking database connection...
+2026-01-16 11:51:13,208 - INFO - ✅ Database connection successful
+2026-01-16 11:51:13,209 - WARNING - ⚠️ Memory check skipped (psutil not installed)
+2026-01-16 11:51:13,210 - INFO - ============================================================
+2026-01-16 11:51:13,210 - INFO - 📊 VALIDATION REPORT
+2026-01-16 11:51:13,210 - INFO - ✅ Passed: 15/17
+2026-01-16 11:51:13,210 - INFO - ❌ Errors: 1
+2026-01-16 11:51:13,210 - INFO - ⚠️ Warnings: 1
+2026-01-16 11:51:13,210 - ERROR - ❌ VALIDATION FAILED - System not ready for launch
+2026-01-16 11:51:13,210 - ERROR -    • Required file requirements.txt is missing
+2026-01-16 11:52:04,166 - INFO - 🚀 Starting Behavioral Maze CAPTCHA System Validation
+2026-01-16 11:52:04,167 - INFO - ============================================================
+2026-01-16 11:52:04,167 - INFO - 🐍 Checking Python dependencies...
+2026-01-16 11:52:04,199 - INFO - ✅ numpy imported successfully
+2026-01-16 11:52:04,253 - INFO - ✅ cv2 imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ flask imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ sqlite3 imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ hashlib imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ json imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ math imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ random imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ time imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ datetime imported successfully
+2026-01-16 11:52:04,342 - INFO - ✅ collections imported successfully
+2026-01-16 11:52:04,342 - INFO - 🔍 Checking required ports...
+2026-01-16 11:52:04,342 - INFO - ✅ Port 8080 is available
+2026-01-16 11:52:04,342 - INFO - 📁 Checking filesystem permissions...
+2026-01-16 11:52:04,343 - INFO - ✅ Directory logs is writable
+2026-01-16 11:52:04,343 - INFO - ✅ Directory templates is writable
+2026-01-16 11:52:04,343 - INFO - ✅ File requirements.txt exists
+2026-01-16 11:52:04,343 - INFO - 💾 Checking database connection...
+2026-01-16 11:52:04,343 - INFO - ✅ Database connection successful
+2026-01-16 11:52:04,344 - WARNING - ⚠️ Memory check skipped (psutil not installed)
+2026-01-16 11:52:04,344 - INFO - ============================================================
+2026-01-16 11:52:04,344 - INFO - 📊 VALIDATION REPORT
+2026-01-16 11:52:04,344 - INFO - ✅ Passed: 16/17
+2026-01-16 11:52:04,344 - INFO - ❌ Errors: 0
+2026-01-16 11:52:04,344 - INFO - ⚠️ Warnings: 1
+2026-01-16 11:52:04,344 - INFO - 🎉 VALIDATION SUCCESSFUL - System ready for launch
+2026-01-16 11:52:04,344 - WARNING - ⚠️ Warnings detected:
+2026-01-16 11:52:04,344 - WARNING -    • psutil not available - cannot check memory

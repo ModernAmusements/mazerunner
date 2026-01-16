@@ -1,0 +1,10 @@
+2026-01-16 11:56:07,489 - performance - INFO - log_performance:144 - Performance: database_connection completed in 0.001s
+2026-01-16 11:56:07,490 - _initialize_database - ERROR - log_error:106 - Error in _initialize_database:392 - AttributeError: 'MazeCaptchaLogger' object has no attribute 'info'
+2026-01-16 11:56:07,490 - _initialize_database - INFO - log_error:113 - Error context: {
+  "operation": "initialize_database"
+}
+2026-01-16 11:56:16,812 - performance - INFO - log_performance:144 - Performance: database_connection completed in 0.001s
+2026-01-16 11:56:16,813 - _initialize_database - ERROR - log_error:106 - Error in _initialize_database:392 - AttributeError: 'MazeCaptchaLogger' object has no attribute 'info'
+2026-01-16 11:56:16,813 - _initialize_database - INFO - log_error:113 - Error context: {
+  "operation": "initialize_database"
+}

@@ -1,6 +1,0 @@
-Starting Working 20x20 Maze Server...
-Open http://127.0.0.1:8080 in your browser
- * Serving Flask app 'working_maze_server'
- * Debug mode: on
-Address already in use
-Port 8080 is in use by another program. Either identify and stop that program, or start the server with a different port.

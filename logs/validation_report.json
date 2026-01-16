@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-01-16 11:52:04.344210",
+  "success_rate": 94.11764705882352,
+  "passed_checks": 16,
+  "total_checks": 17,
+  "errors": [],
+  "warnings": [
+    "psutil not available - cannot check memory"
+  ],
+  "system_ready": true
+}

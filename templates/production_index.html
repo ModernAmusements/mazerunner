@@ -116,6 +116,43 @@
             cursor: not-allowed;
         }
         
+        .btn-primary {
+            background: #0052cc;
+            border-color: #0052cc;
+            font-weight: 600;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-bot {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-large {
+            font-size: 18px;
+            padding: 15px 30px;
+        }
+        
+        .btn-bot-option {
+            background: #17a2b8;
+            border-color: #17a2b8;
+            font-size: 14px;
+            padding: 8px 12px;
+            margin: 5px 5px;
+        }
+        
+        .verify-options {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
         .legend {
             display: flex;
             justify-content: center;
@@ -137,6 +174,11 @@
             width: 20px;
             height: 20px;
             border: 1px solid #333333;
+        }
+        
+        .legend-label {
+            font-size: 12px;
+            color: #888888;
         }
         
         .status {
@@ -298,13 +340,18 @@
                 
                 <div class="controls">
                     <button onclick="loadNewCaptcha()">New Captcha</button>
-                    <button onclick="clearPath()">Clear Path</button>
-                    <button onclick="verifySolution()">Verify Solution</button>
-                    <button onclick="simulateBot()">Simulate Bot</button>
+                    <button onclick="clearPath()" class="btn-secondary">Clear Path</button>
+                    <button onclick="verifySolution()" id="verifyBtn" class="btn-primary">Verify Solution</button>
+                    <button onclick="simulateBot()" class="btn-bot">Simulate Bot</button>
                 </div>
                 
                 <div class="verify-section">
-                    <button onclick="verifySolution()" disabled>Verify Solution</button>
+                    <div class="verify-options">
+                        <button onclick="simulateBot('perfect')" class="btn-bot-option">Smart Bot</button>
+                        <button onclick="simulateBot('wall_ignorant')" class="btn-bot-option">Wall-Ignorant Bot</button>
+                        <button onclick="simulateBot('straight_line')" class="btn-bot-option">Straight Line Bot</button>
+                        <button onclick="simulateBot('human_like')" class="btn-bot-option">Human-Like Bot</button>
+                    </div>
                 </div>
                 
                 <div id="status" class="status hidden"></div>
@@ -442,16 +489,36 @@
                         return;
                     }
                     
+                    console.log('=== CAPTCHA LOADED ===');
+                    console.log('Captcha ID:', captcha.captcha_id);
+                    console.log('Captcha start:', captcha.start);
+                    console.log('Captcha end:', captcha.end);
+                    
                     currentCaptcha = captcha;
+                    // Convert maze coordinates to canvas coordinates for drawing indicators
+                    if (currentCaptcha.start && currentCaptcha.end) {
+                        currentCaptcha.canvas_start = [
+                            currentCaptcha.start[1] * 20 + 10,  // col to x with center offset
+                            currentCaptcha.start[0] * 20 + 10   // row to y with center offset
+                        ];
+                        currentCaptcha.canvas_end = [
+                            currentCaptcha.end[1] * 20 + 10,    // col to x with center offset
+                            currentCaptcha.end[0] * 20 + 10     // row to y with center offset
+                        ];
+                        console.log('Canvas start calculated:', currentCaptcha.canvas_start);
+                        console.log('Canvas end calculated:', currentCaptcha.canvas_end);
+                        console.log('Maze start from server:', currentCaptcha.start);
+                        console.log('Maze end from server:', currentCaptcha.end);
+                    }
                     userPath = [];
                     isDrawing = false;
                     
                     // Load maze image
                     mazeImage = new Image();
                     mazeImage.onload = function() {
+                        console.log('Maze image loaded');
                         drawMaze();
-                        // Draw start and end indicators
-                        drawStartEnd();
+                        // Start and end indicators are already drawn by the server in the maze image
                         showStatus('New captcha loaded! Draw a path from green to red.', 'info');
                     };
                     mazeImage.src = captcha.maze_image;
@@ -573,19 +640,52 @@
         
         // Canvas mouse events
         canvas.addEventListener('mousedown', function(e) {
-            if (!currentCaptcha) return;
+            if (!currentCaptcha) {
+                console.log('No current captcha loaded');
+                return;
+            }
             
             var rect = canvas.getBoundingClientRect();
             var x = Math.floor(e.clientX - rect.left);
             var y = Math.floor(e.clientY - rect.top);
             
+            console.log('=== MOUSE DOWN ===');
             console.log('MouseDown at:', x, y);
+            console.log('Current captcha ID:', currentCaptcha.captcha_id);
             console.log('Expected start:', currentCaptcha.canvas_start);
             
             isDrawing = true;
             userPath = [{x: x, y: y}];
             drawMaze();
-            drawStartEnd(); // Redraw indicators
+            
+            // Start tracking mouse data for this captcha
+            console.log('🔍 STARTING MOUSE TRACKING FOR CAPTCHA:', currentCaptcha.captcha_id);
+            
+            // Simple direct approach - no delays, no complexity
+            fetch('/api/track', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    captcha_id: currentCaptcha.captcha_id,
+                    x: x,
+                    y: y,
+                    timestamp: Date.now() / 1000,
+                    event: 'mousedown'
+                })
+            }).then(function(response) {
+                console.log('🔍 TRACK RESPONSE:', response.status, response.statusText);
+                
+                if (response.ok) {
+                    console.log('✅ Mouse tracking SUCCESS for captcha:', currentCaptcha.captcha_id);
+                } else {
+                    console.log('❌ Mouse tracking FAILED - Status:', response.status);
+                }
+            }).catch(function(error) {
+                console.error('❌ Mouse tracking ERROR:', error.message || error);
+            });
         });
 
         canvas.addEventListener('mousemove', function(e) {
@@ -599,7 +699,26 @@
             if (Math.abs(x - lastPoint.x) > 3 || Math.abs(y - lastPoint.y) > 3) {
                 userPath.push({x: x, y: y});
                 drawMaze();
-                drawStartEnd(); // Redraw indicators
+                
+                // Track mouse movement during drawing
+                if (currentCaptcha && currentCaptcha.captcha_id) {
+                    fetch('/api/track', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({
+                            captcha_id: currentCaptcha.captcha_id,
+                            x: x,
+                            y: y,
+                            timestamp: Date.now() / 1000,
+                            event: 'move'
+                        })
+                    }).catch(function(error) {
+                        // Don't log every mouse move to avoid spam, but track periodically
+                    });
+                }
             }
         });
 
@@ -607,6 +726,26 @@
             isDrawing = false;
             console.log('MouseUp - Final path length:', userPath.length);
             console.log('Path points:', userPath.slice(0, 3), '...', userPath.slice(-3));
+            
+            // Track mouse up event
+            if (currentCaptcha && currentCaptcha.captcha_id) {
+                fetch('/api/track', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        captcha_id: currentCaptcha.captcha_id,
+                        x: userPath[userPath.length - 1].x,
+                        y: userPath[userPath.length - 1].y,
+                        timestamp: Date.now() / 1000,
+                        event: 'mouseup'
+                    })
+                }).catch(function(error) {
+                    console.error('MouseUp tracking error:', error);
+                });
+            }
         });
 
         canvas.addEventListener('mouseleave', function() {
@@ -625,13 +764,18 @@
         // Verify solution
         function verifySolution() {
             if (!currentCaptcha) {
+                console.log('❌ No current captcha loaded');
                 showStatus('Please load a captcha first.', 'error');
                 return;
             }
             
             console.log('=== VERIFICATION ATTEMPT ===');
+            console.log('Current captcha ID:', currentCaptcha.captcha_id);
+            console.log('Current captcha start:', currentCaptcha.start);
+            console.log('Current captcha end:', currentCaptcha.end);
             console.log('Path length:', userPath.length);
-            console.log('Path points:', userPath);
+            console.log('First 3 path points:', userPath.slice(0, 3));
+            console.log('Last 3 path points:', userPath.slice(-3));
             console.log('Expected start:', currentCaptcha.canvas_start);
             console.log('Expected end:', currentCaptcha.canvas_end);
             
@@ -643,15 +787,35 @@
             // Quick client-side validation
             var firstPoint = userPath[0];
             var lastPoint = userPath[userPath.length - 1];
-            var startMaze = [(firstPoint[0] - 20) / 20, (firstPoint[1] - 20) / 20];
-            var endMaze = [(lastPoint[0] - 20) / 20, (lastPoint[1] - 20) / 20];
+            
+            console.log('First point for conversion:', firstPoint);
+            console.log('Raw first point:', {x: firstPoint.x, y: firstPoint.y});
+            
+            // Use same Math.round() logic as actual path conversion for consistency
+            var startMaze = [Math.round((firstPoint.y - 10) / 20), Math.round((firstPoint.x - 10) / 20)];
+            var endMaze = [Math.round((lastPoint.y - 10) / 20), Math.round((lastPoint.x - 10) / 20)];
+            
+            console.log('First point raw:', firstPoint);
+            console.log('First point x:', firstPoint.x, 'y:', firstPoint.y);
+            console.log('Expected maze start (row,col):', currentCaptcha.start);
+            console.log('Converted maze start (row,col):', startMaze);
+            console.log('POINT - Check conversion calculation:');
+            console.log('Coordinate conversion - Start:', startMaze, 'End:', endMaze);
             
             console.log('Client conversion - Start:', startMaze, 'End:', endMaze);
             console.log('Expected maze - Start:', currentCaptcha.start, 'End:', currentCaptcha.end);
             
             showStatus('Analyzing your solution...', 'info');
             
-            // Send raw canvas coordinates, let server handle conversion
+            // Convert path to array format for server
+            var pathArray = userPath.map(function(point) {
+                var mazeRow = Math.round((point.y - 10) / 20);
+                var mazeCol = Math.round((point.x - 10) / 20);
+                return [mazeRow, mazeCol];
+            });
+            
+            console.log('Sending path to server:', pathArray.slice(0, 5), '...', pathArray.slice(-5));
+            
             fetch('/api/verify', {
                 method: 'POST',
                 headers: {
@@ -660,29 +824,38 @@
                 credentials: 'same-origin',
                 body: JSON.stringify({
                     captcha_id: currentCaptcha.captcha_id,
-                    path: userPath
+                    path: pathArray
                 })
             })
             .then(function(response) {
+                if (!response.ok) {
+                    return response.json().then(function(errorData) {
+                        throw new Error(errorData.message || 'HTTP ' + response.status);
+                    });
+                }
                 return response.json();
             })
-            .then(function(result) {
-                if (result.success) {
-                    var confidence = result.analysis && result.analysis.confidence ? 
-                        (result.analysis.confidence * 100).toFixed(1) : '0.0';
-                    showStatus('Success: ' + result.message + ' (Confidence: ' + confidence + '%)', 'success');
-                    setTimeout(loadNewCaptcha, 2000);
+            .then(function(data) {
+                if (data.success) {
+                    showStatus('✅ ' + data.message + ' (Confidence: ' + (data.confidence * 100).toFixed(1) + '%)', 'success');
+                    updateAnalytics();
+                    // Clear current captcha after successful verification
+                    currentCaptcha = null;
+                    userPath = [];
                 } else {
-                    var confidence = result.analysis && result.analysis.confidence ? 
-                        (result.analysis.confidence * 100).toFixed(1) : '0.0';
-                    showStatus('Error: ' + result.message + ' (Confidence: ' + confidence + '%)', 'error');
+                    showStatus('❌ Error: ' + data.message + ' (Confidence: ' + (data.confidence * 100).toFixed(1) + '%)', 'error');
+                    updateAnalytics();
                 }
-                
-                updateAnalytics();
             })
             .catch(function(error) {
-                showStatus('Error verifying solution. Please try again.', 'error');
-                console.error('Error verifying solution:', error);
+                console.error('Verification error:', error);
+                if (error.message.includes('expired') || error.message.includes('refresh')) {
+                    showStatus('⚠️ CAPTCHA expired. Loading new one...', 'warning');
+                    loadNewCaptcha();
+                } else {
+                    showStatus('Error verifying solution: ' + error.message, 'error');
+                }
+                updateAnalytics();
             });
         }
         
@@ -721,21 +894,41 @@
             .then(function(result) {
                 console.log('Bot simulation response:', result);
                 
-                // Handle the actual response structure
-                if (result.success !== undefined) {
-                    var success = result.success;
-                    var detected = result.bot_detected ? 'Bot' : 'Human';
-                    var confidence = (result.bot_score ? (1 - result.bot_score) * 100 : 0).toFixed(1);
+                // Handle the actual response structure from working_maze_server.py
+                if (result.analysis) {
+                    var isHuman = result.analysis.is_human;
+                    var detected = isHuman ? 'Human' : 'Bot';
+                    var confidence = (result.analysis.confidence * 100).toFixed(1);
                     
-                    showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', result.bot_detected ? 'error' : 'success');
+                    showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', isHuman ? 'success' : 'error');
+                    
+                    // Update captcha with new data for drawing
+                    currentCaptcha = result;
+                    // Convert maze coordinates to canvas coordinates
+                    if (currentCaptcha.start && currentCaptcha.end) {
+                        currentCaptcha.canvas_start = [
+                            currentCaptcha.start[1] * 20 + 10,  // col to x with center offset
+                            currentCaptcha.start[0] * 20 + 10   // row to y with center offset
+                        ];
+                        currentCaptcha.canvas_end = [
+                            currentCaptcha.end[1] * 20 + 10,    // col to x with center offset
+                            currentCaptcha.end[0] * 20 + 10     // row to y with center offset
+                        ];
+                    }
                     
                     // Draw bot path if available
-                    if (result.path && result.path.length > 0) {
-                        console.log('Drawing bot path:', result.path);
+                    if (result.bot_path && result.bot_path.length > 0) {
+                        console.log('Drawing bot path:', result.bot_path);
                         // Keep bot path as canvas coordinates for direct drawing
-                        botPath = result.path;
+                        botPath = result.bot_path;
                         console.log('Bot path set for drawing:', botPath);
-                        drawMaze();
+                        
+                        // Load the new maze image and draw bot path
+                        mazeImage = new Image();
+                        mazeImage.onload = function() {
+                            drawMaze();
+                        };
+                        mazeImage.src = result.maze_image;
                     }
                 } else if (result.error) {
                     showStatus('Bot simulation failed: ' + result.error, 'error');
@@ -844,7 +1037,7 @@
                     }
                     
                     // Update hourly activity chart
-                    if (hourlyChart && data.hourly_stats) {
+                    if (hourlyChart && data.hourly_stats && Array.isArray(data.hourly_stats)) {
                         var hours = data.hourly_stats.map(function(item) { return item.hour + ':00'; });
                         var humanData = data.hourly_stats.map(function(item) { return item.human; });
                         var botData = data.hourly_stats.map(function(item) { return item.bot; });
@@ -871,19 +1064,20 @@
                     }
                     
                     // Update recent events display
-                    if (data.recent_events && data.recent_events.length > 0) {
+                    if (data.recent_events && Array.isArray(data.recent_events) && data.recent_events.length > 0) {
                         var recentEventsHtml = '';
                         data.recent_events.slice(-10).reverse().forEach(function(event) {
-                            var time = new Date(event.timestamp * 1000).toLocaleTimeString();
-                            var eventClass = event.type === 'human_verified' ? 'human-event' : 
-                                             event.type === 'bot_detected' ? 'bot-event' : 'system-event';
-                            var confidence = (event.confidence * 100).toFixed(1);
+                            var time = event.timestamp ? new Date(event.timestamp * 1000).toLocaleTimeString() : 'Unknown time';
+                            var eventType = event.type || 'unknown';
+                            var eventClass = eventType === 'human_verified' ? 'human-event' : 
+                                             eventType === 'bot_detected' ? 'bot-event' : 'system-event';
+                            var confidence = event.confidence !== undefined ? (event.confidence * 100).toFixed(1) : '0.0';
                             
                             recentEventsHtml += '<div class="event-item ' + eventClass + '">';
                             recentEventsHtml += '<span class="event-time">' + time + '</span>';
-                            recentEventsHtml += '<span class="event-type">' + event.type.replace('_', ' ').toUpperCase() + '</span>';
+                            recentEventsHtml += '<span class="event-type">' + (eventType || 'UNKNOWN').replace('_', ' ').toUpperCase() + '</span>';
                             recentEventsHtml += '<span class="event-confidence">Confidence: ' + confidence + '%</span>';
-                            if (event.reasons && event.reasons.length > 0) {
+                            if (event.reasons && Array.isArray(event.reasons) && event.reasons.length > 0) {
                                 recentEventsHtml += '<div class="event-reasons">Reasons: ' + event.reasons.join(', ') + '</div>';
                             }
                             if (event.wall_touches !== undefined) {

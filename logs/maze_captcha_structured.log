@@ -1,0 +1,2 @@
+{"timestamp": "2026-01-16 11:56:07,490", "level": "ERROR", "logger": "_initialize_database", "function": "log_error", "line": 106, "message": "Error in _initialize_database:392 - AttributeError: 'MazeCaptchaLogger' object has no attribute 'info'"}
+{"timestamp": "2026-01-16 11:56:16,813", "level": "ERROR", "logger": "_initialize_database", "function": "log_error", "line": 106, "message": "Error in _initialize_database:392 - AttributeError: 'MazeCaptchaLogger' object has no attribute 'info'"}

@@ -1,218 +1,169 @@
-Starting Working 20x20 Maze Server...
-Open http://127.0.0.1:8080 in your browser
- * Serving Flask app 'working_maze_server'
- * Debug mode: on
-[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+INFO:__main__:Database initialized
+🚀 Starting Behavioral Maze CAPTCHA System
+🎯 Behavioral Maze CAPTCHA System
+==================================================
+🧩 Advanced Anti-Bot Detection
+🌐 Server: http://127.0.0.1:8080
+🔍 Health Check: http://127.0.0.1:8080/api/health
+==================================================
+✅ Features:
+   • Procedural Maze Generation
+   • Pathfinding Algorithm
+   • Behavioral Analysis
+   • Human Buffer Tolerance
+   • Real-time Analytics
+==================================================
+ * Serving Flask app 'behavioral_maze_captcha'
+ * Debug mode: off
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:8080
-[33mPress CTRL+C to quit[0m
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 237-840-345
-127.0.0.1 - - [15/Jan/2026 11:58:39] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:58:47] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:58:49] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:58:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:58:51] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:58:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:00] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:05] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:09] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:19] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:29] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:39] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:49] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 11:59:59] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:05] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:06] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:06] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:00:06] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:00:06] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:08] "[33mPOST /api/bot-simulate HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:00:11] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:11] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:00:12] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:12] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:12] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:00:13] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:17] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:17] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:19] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:22] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:32] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:42] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:00:52] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:02] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:05] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:08] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:08] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:01:08] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:01:08] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:11] "[33mPOST /api/bot-simulate HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:01:14] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:18] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:18] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:18] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:20] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:25] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:25] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:27] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:28] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:32] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:37] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:37] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:38] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:39] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:48] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:01:58] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:05] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:08] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:18] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:28] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:38] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:48] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:53] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:53] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:02:53] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:02:53] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:02:56] "[33mPOST /api/bot-simulate HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:03:03] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:05] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:13] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:23] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:33] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:43] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:51] "POST /api/verify HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:52] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:52] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:03:52] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:03:52] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:03:54] "[33mPOST /api/bot-simulate HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:03:56] "[33mPOST /api/bot-simulate HTTP/1.1[0m" 404 -
-127.0.0.1 - - [15/Jan/2026 12:04:02] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:04:05] "GET /api/analytics HTTP/1.1" 200 -
-127.0.0.1 - - [15/Jan/2026 12:04:12] "GET /api/analytics HTTP/1.1" 200 -
- * Detected change in '/Users/modernamusmenet/Desktop/BOT/working_maze_server.py', reloading
-Starting Working 20x20 Maze Server...
-Open http://127.0.0.1:8080 in your browser
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474727_1404
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474731_8844
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474740_7327
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474806_3007
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474812_6121
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474813_9158
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474819_6186
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474868_6250
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474874_4642
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474880_3188
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474887_2537
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474892_9796
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474899_4213
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_9582
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_5709
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_4016
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_9745
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_8198
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_9607
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474918_8383
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768474973_8970
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_5385
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_3564
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_9614
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_8700
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_2847
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_8987
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_5496
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475031_9507
-✅ 20x20 maze generated successfully!
-✅ 20x20 maze generated successfully!
-Generated maze maze_1768475032_9748
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 237-840-345
-127.0.0.1 - - [15/Jan/2026 12:04:22] "GET /api/analytics HTTP/1.1" 200 -
-/opt/homebrew/Cellar/python@3.14/3.14.2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-x65sfzm1'}
-  warnings.warn(
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:55:29] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:55:39] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:55:49] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:55:59] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:56:09] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:56:19] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:56:29] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:56:39] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:56:49] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:56:59] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:57:09] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:57:19] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:57:29] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:57:39] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:57:49] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:57:59] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:58:09] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:58:19] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:58:29] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:58:39] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:58:49] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:58:59] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:02] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:02] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:02] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:02] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:02] "GET /api/captcha?difficulty=medium HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:05] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:06] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:07] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:08] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:09] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:10] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:11] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "POST /api/track HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:12] "GET /api/analytics HTTP/1.1" 200 -
+INFO:__main__:Verification request - captcha_id: c584836b1854c77e, path length: 105
+INFO:__main__:Session data keys: ['created_at', 'end_point', 'maze', 'mouse_data', 'solution_path', 'start_point', 'start_time']
+INFO:__main__:Start point: (1, 1), End point: (13, 13)
+INFO:__main__:Checking path - start: (1, 1), end: (13, 13), path_start: [1, 1], path_end: [13, 13]
+INFO:__main__:Path validation - wall violations: 0, allowed: 5
+INFO:__main__:Path accepted - wall violations within tolerance: 0 <= 5
+INFO:__main__:Behavioral analysis - mouse_data points: 0, solve_time: 11.421s, wall_touches: 0
+INFO:__main__:Behavioral score breakdown - total_score: 1.100, is_human: True
+INFO:__main__:Time score: 0.300
+INFO:__main__:Clean path bonus: 0.200 (wall_touches: 0)
+INFO:__main__:Solve time bonus: 0.100
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:14] "POST /api/verify HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:14] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:22] "GET /api/analytics HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [16/Jan/2026 14:59:32] "GET /api/analytics HTTP/1.1" 200 -

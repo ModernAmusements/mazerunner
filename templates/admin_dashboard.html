@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Maze CAPTCHA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #ffffff; }
+        .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px; border-bottom: 1px solid #333; }
+        .header h1 { font-size: 28px; font-weight: 600; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+        .stat-card { background: #1a1a1a; border-radius: 12px; padding: 20px; border: 1px solid #333; }
+        .stat-value { font-size: 32px; font-weight: 700; color: #4CAF50; margin-bottom: 8px; }
+        .stat-label { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bot-value { color: #f44336; }
+        .uncertain-value { color: #ff9800; }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+        .panel { background: #1a1a1a; border-radius: 12px; border: 1px solid #333; overflow: hidden; }
+        .panel-header { background: #2a2a2a; padding: 15px 20px; font-weight: 600; border-bottom: 1px solid #333; }
+        .panel-content { padding: 20px; max-height: 400px; overflow-y: auto; }
+        .session-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
+        .session-item:last-child { border-bottom: none; }
+        .session-id { font-family: monospace; font-size: 12px; color: #888; }
+        .session-status { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .status-human { background: #4CAF50; color: white; }
+        .status-bot { background: #f44336; color: white; }
+        .status-uncertain { background: #ff9800; color: white; }
+        .replay-canvas { width: 100%; height: 300px; background: #000; border-radius: 8px; margin-top: 10px; }
+        .controls { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: #2196F3; color: white; }
+        .btn-primary:hover { background: #1976D2; }
+        .btn-secondary { background: #666; color: white; }
+        .btn-secondary:hover { background: #555; }
+        .chart-container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Behavioral Maze CAPTCHA - Admin Dashboard</h1>
+    </div>
+    
+    <div class="stats-grid" id="statsGrid">
+        <!-- Stats will be populated by JavaScript -->
+    </div>
+    
+    <div class="content-grid">
+        <div class="panel">
+            <div class="panel-header">Recent Sessions</div>
+            <div class="panel-content" id="recentSessions">
+                <!-- Sessions will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="panel">
+            <div class="panel-header">Path Replay</div>
+            <div class="panel-content">
+                <select id="sessionSelector" class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;">
+                    <option value="">Select a session to replay</option>
+                </select>
+                <canvas id="replayCanvas" class="replay-canvas"></canvas>
+                <div class="controls">
+                    <button id="playReplay" class="btn btn-primary">▶️ Play</button>
+                    <button id="pauseReplay" class="btn btn-secondary">⏸️ Pause</button>
+                    <button id="resetReplay" class="btn btn-secondary">⏹️ Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="panel" style="margin: 20px;">
+        <div class="panel-header">Analytics Overview</div>
+        <div class="panel-content">
+            <div class="chart-container">
+                <canvas id="analyticsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let replayData = null;
+        let replayIndex = 0;
+        let isPlaying = false;
+        let animationId = null;
+        
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const [stats, sessions] = await Promise.all([
+                    fetch('/api/admin/stats').then(r => r.json()),
+                    fetch('/api/admin/recent-sessions').then(r => r.json())
+                ]);
+                
+                updateStats(stats);
+                updateRecentSessions(sessions);
+                await loadAnalyticsChart();
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+        
+        function updateStats(stats) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = \`
+                <div class="stat-card">
+                    <div class="stat-value">\${stats.total_attempts}</div>
+                    <div class="stat-label">Total Attempts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">\${stats.human_detected}</div>
+                    <div class="stat-label">Humans Detected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value bot-value">\${stats.bot_detected}</div>
+                    <div class="stat-label">Bots Detected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value uncertain-value">\${stats.uncertain_detected || 0}</div>
+                    <div class="stat-label">Uncertain</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">\${stats.success_rate}%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">\${stats.avg_solve_time}s</div>
+                    <div class="stat-label">Avg Solve Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">\${stats.recent_activity_24h}</div>
+                    <div class="stat-label">Last 24h Activity</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">\${stats.avg_confidence_score}</div>
+                    <div class="stat-label">Avg Confidence</div>
+                </div>
+            \`;
+        }
+        
+        function updateRecentSessions(sessions) {
+            const container = document.getElementById('recentSessions');
+            const selector = document.getElementById('sessionSelector');
+            
+            container.innerHTML = sessions.map(session => \`
+                <div class="session-item">
+                    <div>
+                        <div class="session-id">\${session.session_id}</div>
+                        <small>\${new Date(session.created_at).toLocaleString()}</small>
+                    </div>
+                    <div class="session-status status-\${session.is_human ? 'human' : session.is_human === false ? 'bot' : 'uncertain'}">
+                        \${session.is_human ? 'Human' : session.is_human === false ? 'Bot' : 'Uncertain'}
+                    </div>
+                </div>
+            \`).join('');
+            
+            selector.innerHTML = '<option value="">Select a session to replay</option>' +
+                sessions.map(session => \`<option value="\${session.session_id}">\${session.session_id.substring(0, 8)}...</option>\`).join('');
+        }
+        
+        async function loadReplayData(sessionId) {
+            if (!sessionId) {
+                replayData = null;
+                return;
+            }
+            
+            try {
+                replayData = await fetch(\`/api/admin/path-replay/\${sessionId}\`).then(r => r.json());
+                resetReplay();
+            } catch (error) {
+                console.error('Error loading replay data:', error);
+            }
+        }
+        
+        function drawReplay() {
+            if (!replayData) return;
+            
+            const canvas = document.getElementById('replayCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw maze (simplified)
+            if (replayData.maze_data) {
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                // Draw maze grid (simplified representation)
+            }
+            
+            // Draw start and end points
+            ctx.fillStyle = '#4CAF50';
+            ctx.fillRect(10, 10, 20, 20);
+            ctx.fillStyle = '#f44336';
+            ctx.fillRect(canvas.width - 30, canvas.height - 30, 20, 20);
+            
+            // Draw path up to current index
+            if (replayData.replay_points && replayIndex > 0) {
+                ctx.strokeStyle = replayData.is_human ? '#4CAF50' : '#f44336';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i <= replayIndex && i < replayData.replay_points.length; i++) {
+                    const point = replayData.replay_points[i];
+                    if (i === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Draw current position
+                if (replayIndex < replayData.replay_points.length) {
+                    const currentPoint = replayData.replay_points[replayIndex];
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(currentPoint.x, currentPoint.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        function playReplay() {
+            if (!replayData || isPlaying) return;
+            isPlaying = true;
+            
+            function animate() {
+                if (!isPlaying) {
+                    cancelAnimationFrame(animationId);
+                    return;
+                }
+                
+                if (replayIndex < replayData.replay_points.length - 1) {
+                    replayIndex++;
+                    drawReplay();
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    isPlaying = false;
+                }
+            }
+            
+            animate();
+        }
+        
+        function pauseReplay() {
+            isPlaying = false;
+        }
+        
+        function resetReplay() {
+            isPlaying = false;
+            replayIndex = 0;
+            drawReplay();
+        }
+        
+        async function loadAnalyticsChart() {
+            const indicators = await fetch('/api/admin/bot-indicators').then(r => r.json());
+            
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: indicators.map(i => new Date(i.created_at).toLocaleTimeString()),
+                    datasets: [{
+                        label: 'Bot Indicator Values',
+                        data: indicators.map(i => i.value),
+                        borderColor: '#f44336',
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('sessionSelector').addEventListener('change', (e) => {
+            loadReplayData(e.target.value);
+        });
+        
+        document.getElementById('playReplay').addEventListener('click', playReplay);
+        document.getElementById('pauseReplay').addEventListener('click', pauseReplay);
+        document.getElementById('resetReplay').addEventListener('click', resetReplay);
+        
+        // Initialize dashboard
+        loadDashboard();
+    </script>
+</body>
+</html>
