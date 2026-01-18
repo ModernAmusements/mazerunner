@@ -489,6 +489,7 @@ class SimpleMazeCaptcha:
         @self.app.route('/api/analytics', methods=['GET'])
         def get_analytics():
             """Get basic analytics"""
+            conn = None
             try:
                 conn = sqlite3.connect('maze_captcha.db', detect_types=sqlite3.PARSE_DECLTYPES)
                 cursor = conn.cursor()
@@ -509,49 +510,41 @@ class SimpleMazeCaptcha:
                 
                 success_rate = (human_count / total_attempts * 100) if total_attempts > 0 else 0
                 
-                conn.close()
-                
                 # Get path length distribution
-                try:
-                    cursor.execute('''
-                        SELECT LENGTH(coordinates) as path_length, COUNT(*) 
-                        FROM user_paths 
-                        WHERE is_human = 1
-                        GROUP BY path_length
-                        ORDER BY path_length
-                    ''')
-                    path_lengths = dict(cursor.fetchall())
-                except:
-                    path_lengths = {}
+                cursor.execute('''
+                    SELECT LENGTH(coordinates) as path_length, COUNT(*) 
+                    FROM user_paths 
+                    WHERE is_human = 1
+                    GROUP BY path_length
+                    ORDER BY path_length
+                ''')
+                path_lengths = dict(cursor.fetchall())
+                print(f"DEBUG: path_lengths = {path_lengths}")
                 
                 # Get confidence score distribution
-                try:
-                    cursor.execute('''
-                        SELECT CASE 
-                            WHEN confidence_score >= 0.8 THEN 'High'
-                            WHEN confidence_score >= 0.5 THEN 'Medium'
-                            ELSE 'Low'
-                        END as confidence_range, COUNT(*) 
-                        FROM user_paths 
-                        WHERE is_human = 1 AND confidence_score IS NOT NULL
-                        GROUP BY confidence_range
-                    ''')
-                    confidence_scores = dict(cursor.fetchall())
-                except:
-                    confidence_scores = {}
+                cursor.execute('''
+                    SELECT CASE 
+                        WHEN confidence_score >= 0.8 THEN 'High'
+                        WHEN confidence_score >= 0.5 THEN 'Medium'
+                        ELSE 'Low'
+                    END as confidence_range, COUNT(*) 
+                    FROM user_paths 
+                    WHERE is_human = 1 AND confidence_score IS NOT NULL
+                    GROUP BY confidence_range
+                ''')
+                confidence_scores = dict(cursor.fetchall())
+                print(f"DEBUG: confidence_scores = {confidence_scores}")
                 
                 # Get hourly activity (last 24 hours)
-                try:
-                    cursor.execute('''
-                        SELECT strftime('%H', created_at) as hour, COUNT(*) 
-                        FROM user_paths 
-                        WHERE created_at >= datetime('now', '-24 hours')
-                        GROUP BY hour
-                        ORDER BY hour
-                    ''')
-                    hourly_activity = dict(cursor.fetchall())
-                except:
-                    hourly_activity = {}
+                cursor.execute('''
+                    SELECT strftime('%H', created_at) as hour, COUNT(*) 
+                    FROM user_paths 
+                    WHERE created_at >= datetime('now', '-24 hours')
+                    GROUP BY hour
+                    ORDER BY hour
+                ''')
+                hourly_activity = dict(cursor.fetchall())
+                print(f"DEBUG: hourly_activity = {hourly_activity}")
                 
                 conn.close()
                 
@@ -602,6 +595,9 @@ class SimpleMazeCaptcha:
             except Exception as e:
                 logger.error(f"Error getting analytics: {e}")
                 return jsonify({'error': 'Failed to get analytics'}), 500
+            finally:
+                if conn:
+                    conn.close()
         
         @self.app.route('/api/bot-simulate', methods=['POST'])
         def bot_simulate():

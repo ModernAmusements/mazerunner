@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Debug Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Analytics Debug Test</h1>
+    
+    <div style="width: 400px; height: 400px;">
+        <canvas id="testChart"></canvas>
+    </div>
+    
+    <div id="status">Loading...</div>
+    
+    <script>
+        // Test analytics endpoint directly
+        fetch('http://127.0.0.1:8080/api/analytics')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Analytics data:', data);
+                document.getElementById('status').innerHTML = 'Data loaded: ' + JSON.stringify(data, null, 2);
+                
+                // Create test chart
+                const ctx = document.getElementById('testChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Human Detected', 'Bot Detected', 'Failed'],
+                        datasets: [{
+                            data: [
+                                data.human_detected || 0,
+                                data.bot_detected || 0, 
+                                (data.total_attempts || 0) - (data.human_detected || 0) - (data.bot_detected || 0)
+                            ],
+                            backgroundColor: ['#4ade80', '#f87171', '#fbbf24']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('status').innerHTML = 'Error: ' + error.message;
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas Test</title>
+</head>
+<body>
+    <h1>Canvas Drawing Test</h1>
+    <canvas id="testCanvas" width="400" height="400" style="border: 1px solid black;"></canvas>
+    
+    <div>
+        <button onclick="loadTestMaze()">Load Test Maze</button>
+        <button onclick="clearCanvas()">Clear Canvas</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.log('Canvas cleared');
+        }
+        
+        function loadTestMaze() {
+            // Create a simple test maze pattern
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, 400, 400);
+            
+            // Draw white paths
+            ctx.fillStyle = '#ffffff';
+            // Horizontal path
+            ctx.fillRect(50, 100, 300, 20);
+            ctx.fillRect(50, 200, 300, 20);
+            ctx.fillRect(50, 300, 300, 20);
+            // Vertical connections
+            ctx.fillRect(100, 100, 20, 220);
+            ctx.fillRect(280, 100, 20, 220);
+            
+            // Draw start (green)
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(45, 95, 30, 30);
+            
+            // Draw end (red)
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(325, 295, 30, 30);
+            
+            // Add labels
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('START', 50, 115);
+            ctx.fillText('END', 330, 315);
+            
+            console.log('Test maze drawn successfully');
+        }
+        
+        // Auto-load test on page load
+        window.onload = function() {
+            console.log('Test page loaded');
+            clearCanvas();
+            loadTestMaze();
+        };
+    </script>
+</body>
+</html>
