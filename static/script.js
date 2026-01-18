@@ -833,43 +833,43 @@ window.onload = function() {
 
     setInterval(updateAnalytics, 10000);
 
-    setTimeout(testCanvas, 1000);
-    setTimeout(testPathDrawing, 2000);
+    // setTimeout(testCanvas, 1000);
+    // setTimeout(testPathDrawing, 2000);
 };
 
 // Test path drawing function
-function testPathDrawing() {
-    if (!canvas || !ctx) {
-        return;
-    }
+// function testPathDrawing() {
+//     if (!canvas || !ctx) {
+//         return;
+//     }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+//     ctx.fillStyle = '#f0f0f0';
+//     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    var testPath = [
-        {x: 50, y: 50},
-        {x: 100, y: 100},
-        {x: 150, y: 150},
-        {x: 200, y: 200},
-        {x: 250, y: 250}
-    ];
+//     var testPath = [
+//         {x: 50, y: 50},
+//         {x: 100, y: 100},
+//         {x: 150, y: 150},
+//         {x: 200, y: 200},
+//         {x: 250, y: 250}
+//     ];
 
-    ctx.strokeStyle = '#0066ff';
-    ctx.lineWidth = 4;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+//     ctx.strokeStyle = '#0066ff';
+//     ctx.lineWidth = 4;
+//     ctx.lineCap = 'round';
+//     ctx.lineJoin = 'round';
 
-    ctx.beginPath();
-    ctx.moveTo(testPath[0].x, testPath[0].y);
-    for (var i = 1; i < testPath.length; i++) {
-        ctx.lineTo(testPath[i].x, testPath[i].y);
-    }
-    ctx.stroke();
+//     ctx.beginPath();
+//     ctx.moveTo(testPath[0].x, testPath[0].y);
+//     for (var i = 1; i < testPath.length; i++) {
+//         ctx.lineTo(testPath[i].x, testPath[i].y);
+//     }
+//     ctx.stroke();
 
-    showStatus('Canvas drawing test complete! Try drawing on the maze.', 'info');
-}
+//     showStatus('Canvas drawing test complete! Try drawing on the maze.', 'info');
+// }
 
 // Debug canvas function
 function debugCanvas() {
