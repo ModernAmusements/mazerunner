@@ -603,11 +603,36 @@ function updateAnalytics() {
 
             var recentEventsDiv = document.getElementById('recentEvents');
             if (recentEventsDiv) {
-                recentEventsDiv.innerHTML = '<p>Event log not available from current analytics endpoint</p>';
+                if (data.recent_events && data.recent_events.length > 0) {
+                    var eventsHtml = '';
+                    data.recent_events.forEach(function(event) {
+                        var timestamp = new Date(event.timestamp * 1000).toLocaleString();
+                        var confidence = event.confidence ? (event.confidence * 100).toFixed(1) + '%' : 'N/A';
+                        var typeClass = event.type === 'human_verified' ? 'human-event' : 
+                                       event.type === 'bot_detected' ? 'bot-event' : 'system-event';
+                        
+                        eventsHtml += `
+                            <div class="event-item ${typeClass}">
+                                <span class="event-type">${event.type.replace('_', ' ').toUpperCase()}</span>
+                                <span class="event-time">${timestamp}</span>
+                                ${event.confidence ? `<span class="event-confidence">Confidence: ${confidence}</span>` : ''}
+                                ${event.solve_time ? `<span class="event-confidence">Solve time: ${event.solve_time.toFixed(1)}s</span>` : ''}
+                                ${event.reasons && event.reasons.length > 0 ? `<span class="event-confidence">Reason: ${event.reasons[0]}</span>` : ''}
+                            </div>
+                        `;
+                    });
+                    recentEventsDiv.innerHTML = eventsHtml;
+                } else {
+                    recentEventsDiv.innerHTML = '<p>No recent events available</p>';
+                }
             }
         })
         .catch(function(error) {
-            // Optionally log error
+            console.error('Error fetching analytics:', error);
+            var recentEventsDiv = document.getElementById('recentEvents');
+            if (recentEventsDiv) {
+                recentEventsDiv.innerHTML = '<p>Error loading analytics data</p>';
+            }
         });
 }
 
@@ -837,55 +862,7 @@ window.onload = function() {
     // setTimeout(testPathDrawing, 2000);
 };
 
-// Test path drawing function
-// function testPathDrawing() {
-//     if (!canvas || !ctx) {
-//         return;
-//     }
 
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-//     ctx.fillStyle = '#f0f0f0';
-//     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-//     var testPath = [
-//         {x: 50, y: 50},
-//         {x: 100, y: 100},
-//         {x: 150, y: 150},
-//         {x: 200, y: 200},
-//         {x: 250, y: 250}
-//     ];
-
-//     ctx.strokeStyle = '#0066ff';
-//     ctx.lineWidth = 4;
-//     ctx.lineCap = 'round';
-//     ctx.lineJoin = 'round';
-
-//     ctx.beginPath();
-//     ctx.moveTo(testPath[0].x, testPath[0].y);
-//     for (var i = 1; i < testPath.length; i++) {
-//         ctx.lineTo(testPath[i].x, testPath[i].y);
-//     }
-//     ctx.stroke();
-
-//     showStatus('Canvas drawing test complete! Try drawing on the maze.', 'info');
-// }
-
-// Debug canvas function
-function debugCanvas() {
-    if (!canvas || !ctx) {
-        return;
-    }
-
-    try {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ff0000';
-        ctx.fillRect(10, 10, 50, 50);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '16px Arial';
-        ctx.fillText('DEBUG', 20, 40);
-    } catch (error) {}
-}
 
 // Test function to verify canvas works
 function testCanvas() {

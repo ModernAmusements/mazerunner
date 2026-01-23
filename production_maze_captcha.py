@@ -17,7 +17,7 @@ import cv2
 import base64
 from datetime import datetime, timedelta
 from collections import defaultdict
-from flask import Flask, request, jsonify, render_template, session, g
+from flask import Flask, request, jsonify, render_template, session, g, send_from_directory, make_response
 
 # Define decorators locally to avoid import issues
 def monitor_captcha_generation(func):
@@ -33,7 +33,7 @@ def monitor_verification(func):
     return wrapper
 
 # Import our modules
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)  # Disable default static handler
 app.secret_key = 'maze_captcha_production_complete'
 app.config['HOST'] = '127.0.0.1'
 app.config['PORT'] = 8080
@@ -41,8 +41,15 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_SECURE=False,
-    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30)
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
+    # Disable static file caching for development
+    SEND_FILE_MAX_AGE_DEFAULT=0,
+    TEMPLATES_AUTO_RELOAD=True
 )
+
+# Force Jinja2 to not cache templates
+app.jinja_env.auto_reload = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Analytics with database persistence
 analytics = {
@@ -351,9 +358,24 @@ def create_bot(captcha_data):
         print(f"Error creating bot: {e}")
         return None
 
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Serve static files with no-cache headers"""
+    response = send_from_directory('static', filename)
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 @app.route('/')
 def index():
-    return render_template('production_index.html')
+    # Force template reload by clearing cache
+    app.jinja_env.cache = {}
+    response = make_response(render_template('production_index.html'))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/api/captcha', methods=['GET'])
 def get_captcha():
@@ -595,7 +617,12 @@ app = apply_rate_limiting(app)
 app = add_admin_endpoints(app)
 
 if __name__ == '__main__':
+    import os
+    # Enable development mode via environment variable or default to True for local dev
+    dev_mode = os.environ.get('FLASK_ENV', 'development') == 'development'
+    
     print("🚀 Starting Production-Ready Maze Captcha System with Rate Limiting")
+    print(f"🔧 Development mode: {dev_mode} (static files will auto-reload)")
     print(f"📚 Learned from {analytics['learned_behaviors']['sample_count']} human patterns")
     print(f"🛡️  Rate limiting enabled with thresholds:")
     print(f"   - General requests: {rate_limiter.config['general_requests_per_minute']}/min")
@@ -603,4 +630,5 @@ if __name__ == '__main__':
     print(f"   - Failed attempts threshold: {rate_limiter.config['failed_attempts_threshold']}")
     print("🌐 Available at: http://127.0.0.1:8080")
     print("📊 Analytics: http://127.0.0.1:8080/api/analytics")
-    app.run(host='127.0.0.1', port=8080, debug=False)
+    print("💡 Tip: Edit CSS/JS files and just refresh the browser - no restart needed!")
+    app.run(host='127.0.0.1', port=8080, debug=dev_mode)

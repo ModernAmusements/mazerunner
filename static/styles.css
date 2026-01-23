@@ -28,7 +28,7 @@ h1 {
     color: #ffffff;
     font-size: 2.5rem;
     margin-bottom: 10px;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .subtitle {
@@ -38,8 +38,8 @@ h1 {
 }
 
 .main-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex; 
+    flex-direction: column;
     gap: 40px;
     margin-bottom: 60px;
 }
@@ -56,7 +56,7 @@ h1 {
     margin-bottom: 20px;
     border-bottom: 2px solid #333333;
     padding-bottom: 10px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .captcha-container {
@@ -226,6 +226,10 @@ button:disabled {
     border: 1px solid #e9ecef;
 }
 
+.recent-events p {
+    color: #000000;
+}
+
 .event-item {
     padding: 8px 12px;
     margin: 8px 0;
@@ -248,21 +252,21 @@ button:disabled {
 
 .event-time {
     font-size: 0.9em;
-    color: #666;
+    color: #000000;
     display: block;
     margin-bottom: 4px;
 }
 
 .event-type {
     font-weight: 600;
-    color: #333;
+    color: #000000;
     display: block;
     margin-bottom: 4px;
 }
 
 .event-confidence {
     font-size: 0.85em;
-    color: #666;
+    color: #000000;
     display: block;
 }
 
