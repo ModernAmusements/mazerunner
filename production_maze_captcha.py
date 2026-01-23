@@ -454,12 +454,17 @@ def track_mouse():
 
 @app.route('/api/bot-simulate', methods=['POST'])
 def simulate_bot():
+    print("DEBUG: bot-simulate route called")
     try:
         data = request.get_json()
+        print(f"DEBUG: Received data: {data}")
         captcha_id = data.get('captcha_id')
+        print(f"DEBUG: captcha_id: {captcha_id}")
+        print(f"DEBUG: session keys: {list(session.keys())}")
         
         if not captcha_id or captcha_id not in session:
-            return jsonify({'success': False, 'message': 'Invalid captcha'})
+            print(f"DEBUG: Invalid captcha - captcha_id={captcha_id}, in_session={captcha_id in session if captcha_id else False}")
+            return jsonify({'success': False, 'message': 'Invalid captcha - session expired or not found'})
         
         captcha_data = session[captcha_id]
         
