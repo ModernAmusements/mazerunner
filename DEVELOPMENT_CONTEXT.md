@@ -33,16 +33,33 @@ start = captcha_data.get('start') or captcha_data.get('start_point')
 end = captcha_data.get('end') or captcha_data.get('end_point')
 ```
 
+### UI Architecture
+The frontend uses a scientific minimal black & white design:
+- IBM Plex Sans/Mono typography
+- Navigation bar with section anchors (#captcha, #analytics, #about)
+- Grid-based layout with side-by-side captcha panels
+- Bot path visualization (red dashed line after simulation)
+- Chart.js for analytics visualization
+
+### Status Message Handling
+The `showStatus(message, type, targetId)` function accepts a third parameter for targeting specific status divs:
+- 'humanStatus' - Human captcha section
+- 'botStatus' - Bot captcha section (default)
+
 ### Common Issues and Solutions
 
 1. **Key Name Mismatch**: If you get errors like "Bot simulation error: 'start'", check:
    - Are session keys being stored with one name but accessed with another?
    - Always use `.get()` with fallback to handle both conventions
 
-2. **API Works But Site Doesn't**: If the API endpoints return 200 but the frontend shows errors:
-   - Check frontend JavaScript is using correct session data keys
-   - Verify `captcha_id` is properly initialized in frontend state
-   - Check that session data structure matches API expectations
+2. **Status Messages Mixing**: Always pass the targetId parameter to showStatus():
+   - Human related: showStatus('msg', 'type', 'humanStatus')
+   - Bot related: showStatus('msg', 'type', 'botStatus')
+
+3. **Chart Rendering**: Charts require:
+   - Canvas elements with proper wrapper divs (.chart-wrapper)
+   - initCharts() called on page load
+   - updateAnalytics() called after any captcha action
 
 ## System Architecture
 
@@ -91,5 +108,5 @@ BOT/
 ├── ARCHITECTURE.md                # System architecture diagrams
 ├── DEVELOPMENT_CONTEXT.md         # Development notes (this file)
 ├── .gitignore                     # Git ignore patterns
-└── maze_captcha.db                # SQLite database
+└── maze_captcha.db               # SQLite database
 ```
