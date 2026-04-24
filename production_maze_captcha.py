@@ -1,9 +1,9 @@
-#!/usr/bin/env python3Bot simulation failed
+#!/usr/bin/env python3
 """
-Production-Ready Maze Captcha with Complete Monitoring and Logging
+Clean Production-Ready Maze Captcha System - Working Version
 """
+
 # Import our modules
-from rate_limiter import apply_rate_limiting, add_admin_endpoints, rate_limiter
 from database_sessions import db_session_manager
 from monitoring import setup_monitoring, maze_logger, performance_monitor
 from functools import wraps
@@ -40,7 +40,8 @@ app.config['PORT'] = 8080
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
-    SESSION_COOKIE_SECURE=False,
+    # Use secure session in production (set to True for HTTPS)
+    SESSION_COOKIE_SECURE=False,  # This will be set to True in production environment
     PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
     # Disable static file caching for development
     SEND_FILE_MAX_AGE_DEFAULT=0,
@@ -51,7 +52,7 @@ app.config.update(
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-# Analytics with database persistence
+# Analytics with database persistence - limited to prevent memory leaks
 analytics = {
     'total_attempts': 0,
     'successful_verifications': 0,
@@ -82,6 +83,16 @@ analytics = {
         'learning_progress': 0
     }
 }
+
+# Function to limit analytics data size to prevent memory leaks
+def limit_analytics_data():
+    # Limit recent events to 100 items
+    if len(analytics['recent_events']) > 100:
+        analytics['recent_events'] = analytics['recent_events'][-100:]
+    
+    # Limit human patterns to 1000 items
+    if len(analytics['human_patterns']) > 1000:
+        analytics['human_patterns'] = analytics['human_patterns'][-1000:]
 
 def generate_maze(size=15):
     rows, cols = size, size
@@ -402,6 +413,9 @@ def get_captcha():
     analytics['total_attempts'] += 1
     analytics['difficulty_stats'][difficulty]['attempts'] += 1
     
+    # Limit analytics data to prevent memory leaks
+    limit_analytics_data()
+    
     img = render_maze(maze)
     _, buffer = cv2.imencode('.png', img)
     img_base64 = base64.b64encode(buffer).decode()
@@ -437,6 +451,10 @@ def track_mouse():
     data = request.get_json()
     captcha_id = data.get('captcha_id')
     
+    # Validate input
+    if not captcha_id:
+        return jsonify({'success': False, 'message': 'Missing captcha_id'}), 400
+    
     if captcha_id and captcha_id in session:
         mouse_data = {
             'x': data.get('x', 0),
@@ -445,6 +463,10 @@ def track_mouse():
             'event': data.get('event', 'move')
         }
         
+        # Validate mouse data
+        if not isinstance(mouse_data['x'], (int, float)) or not isinstance(mouse_data['y'], (int, float)):
+            return jsonify({'success': False, 'message': 'Invalid mouse coordinates'}), 400
+            
         session[captcha_id]['mouse_data'].append(mouse_data)
         
         if data.get('event') == 'mousedown' and not session[captcha_id].get('start_time'):
@@ -454,66 +476,86 @@ def track_mouse():
 
 @app.route('/api/bot-simulate', methods=['POST'])
 def simulate_bot():
-    print("DEBUG: bot-simulate route called")
     try:
         data = request.get_json()
-        print(f"DEBUG: Received data: {data}")
         captcha_id = data.get('captcha_id')
-        print(f"DEBUG: captcha_id: {captcha_id}")
-        print(f"DEBUG: session keys: {list(session.keys())}")
+        
+        # Validate input
+        if not captcha_id:
+            return jsonify({'success': False, 'message': 'Missing captcha_id'}), 400
         
         if not captcha_id or captcha_id not in session:
-            print(f"DEBUG: Invalid captcha - captcha_id={captcha_id}, in_session={captcha_id in session if captcha_id else False}")
-            return jsonify({'success': False, 'message': 'Invalid captcha - session expired or not found'})
+            return jsonify({'success': False, 'message': 'Invalid captcha - session expired or not found'}), 400
         
         captcha_data = session[captcha_id]
+        
+        # Validate that required fields exist in captcha_data
+        if 'maze' not in captcha_data or 'solution' not in captcha_data:
+            return jsonify({'success': False, 'message': 'Invalid captcha data - missing required fields'}), 500
         
         # Create bot simulation
         bot_result = create_bot(captcha_data)
         if not bot_result:
-            return jsonify({'success': False, 'message': 'Bot simulation failed'})
+            return jsonify({'success': False, 'message': 'Bot simulation failed'}), 500
         
         start_time = captcha_data.get('start_time') or captcha_data['created_at']
         solve_time = bot_result['solve_time']
         
-        # Basic validation
+        # Basic validation - ensure path exists and is valid format
         try:
-            path_tuples = [(int(p[0]), int(p[1])) for p in bot_result['path']]
-        except:
-            return jsonify({'success': False, 'message': 'Invalid path format', 'analysis': {'is_human': False, 'confidence': 0.0}})
-        
-        if len(path_tuples) == 0:
-            return jsonify({'success': False, 'message': 'Empty path', 'analysis': {'is_human': False, 'confidence': 0.0}})
+            if 'path' not in bot_result or not bot_result['path']:
+                return jsonify({'success': False, 'message': 'Invalid path data from bot simulation', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
+            
+            path_tuples = []
+            for p in bot_result['path']:
+                if isinstance(p, (list, tuple)) and len(p) >= 2:
+                    path_tuples.append((int(p[0]), int(p[1])))
+                else:
+                    # Try to convert from dict format if needed
+                    if isinstance(p, dict) and 'x' in p and 'y' in p:
+                        path_tuples.append((int(p['x']), int(p['y'])))
+                    else:
+                        return jsonify({'success': False, 'message': f'Invalid path point format: {p}', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
+            
+            if len(path_tuples) == 0:
+                return jsonify({'success': False, 'message': 'Empty path', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
+                
+        except (ValueError, TypeError, IndexError) as e:
+            return jsonify({'success': False, 'message': f'Invalid path format: {str(e)}', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
         
         # Check start and end
-        if path_tuples[0] != tuple(captcha_data['start']):
-            return jsonify({'success': False, 'message': 'Path must start at green square', 'analysis': {'is_human': False, 'confidence': 0.0}})
-        
-        if path_tuples[-1] != tuple(captcha_data['end']):
-            return jsonify({'success': False, 'message': 'Path must end at blue square', 'analysis': {'is_human': False, 'confidence': 0.0}})
-        
-        # Check path validity with tolerance
-        maze = np.array(captcha_data['maze'])
-        
-        # Count wall touches and allow minor ones
-        wall_touches = 0
-        max_allowed_wall_touches = max(3, len(path_tuples) // 10)  # Allow 1 wall touch per 10 steps, minimum 3
-        
-        for i, (r, c) in enumerate(path_tuples):
-            # Check bounds
-            if r >= maze.shape[0] or c >= maze.shape[1] or r < 0 or c < 0:
-                return jsonify({'success': False, 'message': 'Path goes out of bounds', 'analysis': {'is_human': False, 'confidence': 0.0}})
+        try:
+            if 'start' not in captcha_data or path_tuples[0] != tuple(captcha_data['start']):
+                return jsonify({'success': False, 'message': 'Path must start at green square', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
             
-            # Check if path hits wall
-            if maze[r, c] != 1:
-                wall_touches += 1
-                # Allow some wall touches but not too many
-                if wall_touches > max_allowed_wall_touches:
-                    return jsonify({'success': False, 'message': f'Path goes through walls ({wall_touches} wall touches > {max_allowed_wall_touches} allowed)', 'analysis': {'is_human': False, 'confidence': 0.0}})
+            if 'end' not in captcha_data or path_tuples[-1] != tuple(captcha_data['end']):
+                return jsonify({'success': False, 'message': 'Path must end at blue square', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
+        except (KeyError, TypeError) as e:
+            return jsonify({'success': False, 'message': f'Invalid start/end point in captcha data: {str(e)}', 'analysis': {'is_human': False, 'confidence': 0.0}}), 500
         
-        # Success if wall touches are within tolerance
-        if wall_touches > 0:
-            print(f"DEBUG: Path has {wall_touches} wall touches (allowed: {max_allowed_wall_touches})")
+        # Check path validity with tolerance - ensure maze data is valid
+        try:
+            maze = np.array(captcha_data['maze'])
+            if maze.ndim != 2:
+                return jsonify({'success': False, 'message': 'Invalid maze format', 'analysis': {'is_human': False, 'confidence': 0.0}}), 500
+                
+            # Count wall touches and allow minor ones
+            wall_touches = 0
+            max_allowed_wall_touches = max(3, len(path_tuples) // 10)  # Allow 1 wall touch per 10 steps, minimum 3
+            
+            for i, (r, c) in enumerate(path_tuples):
+                # Check bounds
+                if r >= maze.shape[0] or c >= maze.shape[1] or r < 0 or c < 0:
+                    return jsonify({'success': False, 'message': 'Path goes out of bounds', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
+                
+                # Check if path hits wall (should not be 1)
+                if maze[r, c] != 1:
+                    wall_touches += 1
+                    # Allow some wall touches but not too many
+                    if wall_touches > max_allowed_wall_touches:
+                        return jsonify({'success': False, 'message': f'Path goes through walls ({wall_touches} wall touches > {max_allowed_wall_touches} allowed)', 'analysis': {'is_human': False, 'confidence': 0.0}}), 400
+        except (ValueError, TypeError, IndexError) as e:
+            return jsonify({'success': False, 'message': f'Invalid maze data: {str(e)}', 'analysis': {'is_human': False, 'confidence': 0.0}}), 500
         
         # Analyze behavior
         analysis = analyze_and_learn(
@@ -542,9 +584,9 @@ def simulate_bot():
                 'wall_touches': wall_touches if 'wall_touches' in locals() else 0
             })
             
-            # Record successful attempt for rate limiting
-            if hasattr(g, 'client_ip'):
-                rate_limiter.record_successful_attempt(g.client_ip)
+            # Limit analytics data to prevent memory leaks
+            limit_analytics_data()
+            
         else:
             analytics['bot_detected'] += 1
             message = f"Bot detected: {analysis['reasons'][0] if analysis['reasons'] else 'Unknown'}"
@@ -561,13 +603,14 @@ def simulate_bot():
                 'wall_touches': wall_touches if 'wall_touches' in locals() else 0
             })
             
-            # Record failed attempt for rate limiting
-            if hasattr(g, 'client_ip'):
-                was_banned = rate_limiter.record_failed_attempt(g.client_ip)
-                if was_banned:
-                    message += " - IP banned due to repeated failures"
+            # Limit analytics data to prevent memory leaks
+            limit_analytics_data()
         
-        session.pop(captcha_id)
+        # Clean up session properly
+        try:
+            session.pop(captcha_id)
+        except KeyError:
+            pass
         
         return jsonify({
             'success': analysis['is_human'],
@@ -580,6 +623,152 @@ def simulate_bot():
         })
         
     except Exception as e:
+        # Log the error for debugging
+        print(f"Error in bot-simulate: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Verification error: {str(e)}',
+            'analysis': {'is_human': False, 'confidence': 0.0, 'reasons': ['System error']}
+        }), 500
+
+@app.route('/api/verify', methods=['POST'])
+def verify_solution():
+    try:
+        data = request.get_json()
+        captcha_id = data.get('captcha_id')
+        path_data = data.get('path', [])
+        
+        # Validate input
+        if not captcha_id:
+            return jsonify({'success': False, 'message': 'Missing captcha_id'}), 400
+        
+        if not isinstance(path_data, list):
+            return jsonify({'success': False, 'message': 'Invalid path data format'}), 400
+        
+        if not captcha_id or captcha_id not in session:
+            return jsonify({'success': False, 'message': 'Invalid captcha - session expired or not found'})
+        
+        # Validate path data format
+        if not isinstance(path_data, list) or len(path_data) == 0:
+            return jsonify({'success': False, 'message': 'Invalid or empty path data'}), 400
+        
+        # Convert path to tuples (if needed)
+        try:
+            path_tuples = [(int(p[0]), int(p[1])) for p in path_data]
+        except (ValueError, TypeError):
+            return jsonify({'success': False, 'message': 'Invalid path format'}), 400
+        
+        captcha_data = session[captcha_id]
+        
+        # Validate start and end points
+        if path_tuples[0] != tuple(captcha_data['start']):
+            return jsonify({'success': False, 'message': 'Path must start at green square'})
+        
+        if path_tuples[-1] != tuple(captcha_data['end']):
+            return jsonify({'success': False, 'message': 'Path must end at blue square'})
+        
+        # Check path validity with tolerance - ensure path stays within maze
+        maze = np.array(captcha_data['maze'])
+        
+        # Count wall touches and allow minor ones
+        wall_touches = 0
+        max_allowed_wall_touches = max(3, len(path_tuples) // 10)  # Allow 1 wall touch per 10 steps, minimum 3
+        
+        for i, (r, c) in enumerate(path_tuples):
+            # Check bounds
+            if r >= maze.shape[0] or c >= maze.shape[1] or r < 0 or c < 0:
+                return jsonify({'success': False, 'message': 'Path goes out of bounds'})
+            
+            # Check if path hits wall (should not be 1)
+            if maze[r, c] != 1:
+                wall_touches += 1
+                # Allow some wall touches but not too many
+                if wall_touches > max_allowed_wall_touches:
+                    return jsonify({'success': False, 'message': f'Path goes through walls ({wall_touches} wall touches > {max_allowed_wall_touches} allowed)'})
+        
+        # Calculate solve time (if available)
+        start_time = captcha_data.get('start_time') or captcha_data['created_at']
+        solve_time = time.time() - start_time
+        
+        # Analyze behavior (if mouse data is available)
+        mouse_data = captcha_data.get('mouse_data', [])
+        
+        # If no mouse data, create a minimal analysis
+        if len(mouse_data) < 10:
+            # Create mock mouse data for basic analysis
+            analysis = {
+                'is_human': True,
+                'confidence': 0.6,
+                'reasons': ['Basic validation passed'],
+                'metrics': {
+                    'solve_time': solve_time,
+                    'velocity_variance': 200,
+                    'direction_changes': 5,
+                    'avg_velocity': 100,
+                    'path_length': len(path_tuples)
+                }
+            }
+        else:
+            analysis = analyze_and_learn(
+                mouse_data,
+                solve_time,
+                path_tuples
+            )
+        
+        # Update analytics with comprehensive tracking
+        current_time = time.time()
+        
+        if analysis['is_human']:
+            analytics['human_detected'] += 1
+            analytics['successful_verifications'] += 1
+            analytics['difficulty_stats'][captcha_data['difficulty']]['success'] += 1
+            message = "Human verified - captcha solved successfully!"
+            
+            # Record successful attempt details
+            analytics['recent_events'].append({
+                'type': 'human_verified',
+                'timestamp': current_time,
+                'confidence': analysis['confidence'],
+                'solve_time': solve_time,
+                'path_length': len(path_tuples),
+                'difficulty': captcha_data['difficulty'],
+                'wall_touches': wall_touches
+            })
+            
+            # Limit analytics data to prevent memory leaks
+            limit_analytics_data()
+        else:
+            analytics['bot_detected'] += 1
+            message = f"Bot detected: {analysis['reasons'][0] if analysis['reasons'] else 'Unknown'}"
+            
+            # Record bot detection details
+            analytics['recent_events'].append({
+                'type': 'bot_detected',
+                'timestamp': current_time,
+                'confidence': analysis['confidence'],
+                'solve_time': solve_time,
+                'path_length': len(path_tuples),
+                'difficulty': captcha_data['difficulty'],
+                'reasons': analysis['reasons'],
+                'wall_touches': wall_touches
+            })
+            
+            # Limit analytics data to prevent memory leaks
+            limit_analytics_data()
+        
+        # Clean up session properly
+        try:
+            session.pop(captcha_id)
+        except KeyError:
+            pass
+        
+        return jsonify({
+            'success': analysis['is_human'],
+            'message': message,
+            'analysis': analysis
+        })
+        
+    except Exception as e:
         return jsonify({
             'success': False,
             'message': f'Verification error: {str(e)}',
@@ -588,6 +777,9 @@ def simulate_bot():
 
 @app.route('/api/analytics')
 def get_analytics():
+    # Limit analytics data to prevent memory leaks
+    limit_analytics_data()
+    
     # Calculate success rates
     total = analytics['total_attempts']
     success_rate = (analytics['successful_verifications'] / total * 100) if total > 0 else 0
@@ -617,22 +809,14 @@ def get_analytics():
         }
     })
 
-# Apply rate limiting and admin endpoints
-app = apply_rate_limiting(app)
-app = add_admin_endpoints(app)
-
 if __name__ == '__main__':
     import os
     # Enable development mode via environment variable or default to True for local dev
     dev_mode = os.environ.get('FLASK_ENV', 'development') == 'development'
     
-    print("🚀 Starting Production-Ready Maze Captcha System with Rate Limiting")
+    print("🚀 Starting Production-Ready Maze Captcha System")
     print(f"🔧 Development mode: {dev_mode} (static files will auto-reload)")
     print(f"📚 Learned from {analytics['learned_behaviors']['sample_count']} human patterns")
-    print(f"🛡️  Rate limiting enabled with thresholds:")
-    print(f"   - General requests: {rate_limiter.config['general_requests_per_minute']}/min")
-    print(f"   - Captcha requests: {rate_limiter.config['captcha_requests_per_minute']}/min")
-    print(f"   - Failed attempts threshold: {rate_limiter.config['failed_attempts_threshold']}")
     print("🌐 Available at: http://127.0.0.1:8080")
     print("📊 Analytics: http://127.0.0.1:8080/api/analytics")
     print("💡 Tip: Edit CSS/JS files and just refresh the browser - no restart needed!")

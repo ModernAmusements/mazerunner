@@ -140,13 +140,13 @@ def add_admin_endpoints(app):
     """Add administrative endpoints for monitoring rate limiting"""
     
     @app.route('/admin/rate-limit-status/<ip>')
-    def get_ip_status(ip):
+    def admin_rate_limit_status(ip):
         """Get rate limiting status for an IP (admin only)"""
         from flask import jsonify
         return jsonify(rate_limiter.get_ip_status(ip))
     
     @app.route('/admin/rate-limit-stats')
-    def get_rate_limit_stats():
+    def admin_rate_limit_stats():
         """Get overall rate limiting statistics (admin only)"""
         from flask import jsonify
         
