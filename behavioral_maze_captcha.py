@@ -615,9 +615,15 @@ class SimpleMazeCaptcha:
                 
                 captcha_data = session[captcha_id]
                 
-                # Simple bot simulation (direct path)
-                start = captcha_data['start']
-                end = captcha_data['end']
+                # Validate required keys exist (support both naming conventions)
+                if 'start' not in captcha_data and 'start_point' not in captcha_data:
+                    return jsonify({'success': False, 'message': 'Missing start in captcha data'})
+                if 'end' not in captcha_data and 'end_point' not in captcha_data:
+                    return jsonify({'success': False, 'message': 'Missing end in captcha data'})
+                
+                # Handle both key naming conventions
+                start = captcha_data.get('start') or captcha_data.get('start_point')
+                end = captcha_data.get('end') or captcha_data.get('end_point')
                 
                 # Create simple bot path (direct line with some randomness)
                 import random
