@@ -1,8 +1,6 @@
 #!/bin/bash
-"""
-Behavioral Maze CAPTCHA System - Startup Script
-Ensures virtual environment is activated and dependencies are available
-"""
+# Behavioral Maze CAPTCHA System - Startup Script
+# Ensures virtual environment is activated and dependencies are available
 
 echo "🚀 Starting Behavioral Maze CAPTCHA System"
 echo "========================================"
@@ -32,6 +30,12 @@ fi
 # Activate virtual environment
 echo "🔧 Activating virtual environment..."
 source maze_env/bin/activate
+
+# Install dependencies if needed
+if ! python -c "import numpy" 2>/dev/null; then
+    echo "📦 Installing dependencies..."
+    pip install numpy opencv-python flask
+fi
 
 # Check dependencies
 echo "📦 Checking dependencies..."
