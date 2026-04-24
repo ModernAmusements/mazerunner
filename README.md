@@ -16,9 +16,9 @@ A sophisticated CAPTCHA system that uses maze-solving challenges to distinguish 
 
 ### 🛡️ Production Features
 - **Rate Limiting**: IP-based throttling and banning for abuse prevention
-- **Session Management**: Secure Flask sessions with configurable timeouts
+- **Secure Session Management**: Production-hardened Flask sessions with configurable timeouts
 - **Comprehensive Analytics**: Real-time statistics and performance monitoring
-- **Database Integration**: Persistent storage for patterns and metrics
+- **Memory-Safe Operations**: Prevents memory leaks through data limits and cleanup
 
 ### 📊 Monitoring & Analytics
 - **Real-time Statistics**: Success rates, bot detection accuracy, performance metrics
@@ -81,6 +81,7 @@ Default settings:
 - Failed attempt tracking with IP banning
 - Secure session management
 - Comprehensive audit logging
+- Memory-safe analytics to prevent resource exhaustion
 
 ## Technologies Used
 
@@ -105,6 +106,23 @@ Each module can be developed and tested independently.
 - Efficient path validation with tolerance
 - Minimal database queries through session management
 - Real-time analytics without performance impact
+- Memory-safe operations to prevent leaks
+
+## Production Hardening
+
+The system has been hardened for production use with:
+- Secure session configuration (SESSION_COOKIE_SECURE configurable)
+- Memory-safe analytics storage with data limits
+- Comprehensive input validation and error handling
+- No debug output in production code
+- Rate limiting and abuse prevention
+
+## Decoupled Bot Simulation Feature
+
+The system now supports decoupled bot simulation with side-by-side captchas:
+- One captcha for human verification
+- One captcha for bot simulation
+- Both captchas use the same maze structure but with different path validation
 
 ## License
 

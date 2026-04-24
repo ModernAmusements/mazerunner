@@ -1,12 +1,12 @@
-// There are a few duplicated blocks and misplaced braces in your code. 
-// Here is a cleaned-up version with syntax errors fixed and duplicate code removed:
-
 // Global variables
-var currentCaptcha = null;
-var userPath = [];
-var isDrawing = false;
-var mazeImage = null;
+var currentHumanCaptcha = null;
+var currentBotCaptcha = null;
+var humanPath = [];
 var botPath = [];
+var isHumanDrawing = false;
+var isBotDrawing = false;
+var humanMazeImage = null;
+var botMazeImage = null;
 var analyticsData = null;
 var performanceChart = null;
 var learningChart = null;
@@ -15,23 +15,25 @@ var confidenceChart = null;
 var hourlyChart = null;
 
 // Canvas setup - will be initialized after DOM loads
-var canvas = null;
-var ctx = null;
+var humanCanvas = null;
+var botCanvas = null;
+var humanCtx = null;
+var botCtx = null;
 
-// Load new captcha
-function loadNewCaptcha() {
-    console.log('Loading new captcha...');
+// Load new human captcha
+function loadNewHumanCaptcha() {
+    console.log('Loading new human captcha...');
 
-    // Ensure canvas is ready
-    if (!canvas || !ctx) {
-        console.error('Canvas not initialized, re-initializing...');
-        canvas = document.getElementById('mazeCanvas');
-        if (canvas) {
-            ctx = canvas.getContext('2d');
-            console.log('Canvas re-initialized successfully');
+    // Ensure canvases are ready
+    if (!humanCanvas || !humanCtx) {
+        console.error('Human canvas not initialized, re-initializing...');
+        humanCanvas = document.getElementById('humanMazeCanvas');
+        if (humanCanvas) {
+            humanCtx = humanCanvas.getContext('2d');
+            console.log('Human canvas re-initialized successfully');
         } else {
-            console.error('Cannot find maze canvas element!');
-            showStatus('Error: Canvas not found', 'error');
+            console.error('Cannot find human maze canvas element!');
+            showStatus('Error: Human Canvas not found', 'error');
             return;
         }
     }
@@ -51,30 +53,29 @@ function loadNewCaptcha() {
                 return;
             }
 
-            console.log('=== CAPTCHA LOADED ===');
+            console.log('=== HUMAN CAPTCHA LOADED ===');
             console.log('Captcha ID:', captcha.captcha_id);
             console.log('Captcha start:', captcha.start);
             console.log('Captcha end:', captcha.end);
             console.log('Maze image length:', captcha.maze_image ? captcha.maze_image.length : 'undefined');
 
-            currentCaptcha = captcha;
+            currentHumanCaptcha = captcha;
             // Convert maze coordinates to canvas coordinates for drawing indicators
-            if (currentCaptcha.start && currentCaptcha.end) {
-                currentCaptcha.canvas_start = [
-                    currentCaptcha.start[1] * 20 + 10,  // col to x with center offset
-                    currentCaptcha.start[0] * 20 + 10   // row to y with center offset
+            if (currentHumanCaptcha.start && currentHumanCaptcha.end) {
+                currentHumanCaptcha.canvas_start = [
+                    currentHumanCaptcha.start[1] * 20 + 10,  // col to x with center offset
+                    currentHumanCaptcha.start[0] * 20 + 10   // row to y with center offset
                 ];
-                currentCaptcha.canvas_end = [
-                    currentCaptcha.end[1] * 20 + 10,    // col to x with center offset
-                    currentCaptcha.end[0] * 20 + 10     // row to y with center offset
+                currentHumanCaptcha.canvas_end = [
+                    currentHumanCaptcha.end[1] * 20 + 10,    // col to x with center offset
+                    currentHumanCaptcha.end[0] * 20 + 10     // row to y with center offset
                 ];
-                console.log('Canvas start calculated:', currentCaptcha.canvas_start);
-                console.log('Canvas end calculated:', currentCaptcha.canvas_end);
+                console.log('Canvas start calculated:', currentHumanCaptcha.canvas_start);
+                console.log('Canvas end calculated:', currentHumanCaptcha.canvas_end);
             }
-            userPath = [];
-            botPath = [];
-            isDrawing = false;
-            console.log('User path and botPath reset');
+            humanPath = [];
+            isHumanDrawing = false;
+            console.log('Human path reset');
 
             if (!captcha.maze_image) {
                 console.error('No maze_image in captcha response');
@@ -83,188 +84,241 @@ function loadNewCaptcha() {
             }
 
             // Load maze image
-            mazeImage = new Image();
-            mazeImage.onload = function() {
-                console.log('Maze image loaded, drawing...');
-                console.log('Canvas size:', canvas.width, 'x', canvas.height);
-                console.log('Image size:', mazeImage.width, 'x', mazeImage.height);
-                drawMaze();
-                showStatus('New captcha loaded! Draw a path from green to red.', 'info');
+            humanMazeImage = new Image();
+            humanMazeImage.onload = function() {
+                console.log('Human maze image loaded, drawing...');
+                console.log('Canvas size:', humanCanvas.width, 'x', humanCanvas.height);
+                console.log('Image size:', humanMazeImage.width, 'x', humanMazeImage.height);
+                drawHumanMaze();
+                showStatus('New human captcha loaded! Draw a path from green to red.', 'info');
             };
-            mazeImage.onerror = function(error) {
-                console.error('Failed to load maze image:', error);
-                showStatus('Error loading maze image', 'error');
+            humanMazeImage.onerror = function(error) {
+                console.error('Failed to load human maze image:', error);
+                showStatus('Error loading human maze image', 'error');
             };
-            mazeImage.src = captcha.maze_image;
+            humanMazeImage.src = captcha.maze_image;
         })
         .catch(function(error) {
-            console.error('Error loading captcha:', error);
-            showStatus('Error loading captcha. Please try again.', 'error');
+            console.error('Error loading human captcha:', error);
+            showStatus('Error loading human captcha. Please try again.', 'error');
         });
 }
 
-// Draw maze
-function drawMaze() {
-    if (!ctx) {
-        console.error('Canvas context is null, cannot draw');
+// Load new bot captcha (same maze structure but with different path)
+function loadNewBotCaptcha() {
+    console.log('Loading new bot captcha...');
+
+    // Ensure canvases are ready
+    if (!botCanvas || !botCtx) {
+        console.error('Bot canvas not initialized, re-initializing...');
+        botCanvas = document.getElementById('botMazeCanvas');
+        if (botCanvas) {
+            botCtx = botCanvas.getContext('2d');
+            console.log('Bot canvas re-initialized successfully');
+        } else {
+            console.error('Cannot find bot maze canvas element!');
+            showStatus('Error: Bot Canvas not found', 'error');
+            return;
+        }
+    }
+
+    fetch('/api/captcha?difficulty=medium', {
+        credentials: 'same-origin'
+    })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(captcha) {
+            if (captcha.error) {
+                showStatus('Error: ' + captcha.error, 'error');
+                return;
+            }
+
+            console.log('=== BOT CAPTCHA LOADED ===');
+            console.log('Captcha ID:', captcha.captcha_id);
+            console.log('Captcha start:', captcha.start);
+            console.log('Captcha end:', captcha.end);
+
+            currentBotCaptcha = captcha;
+            // Convert maze coordinates to canvas coordinates for drawing indicators
+            if (currentBotCaptcha.start && currentBotCaptcha.end) {
+                currentBotCaptcha.canvas_start = [
+                    currentBotCaptcha.start[1] * 20 + 10,  // col to x with center offset
+                    currentBotCaptcha.start[0] * 20 + 10   // row to y with center offset
+                ];
+                currentBotCaptcha.canvas_end = [
+                    currentBotCaptcha.end[1] * 20 + 10,    // col to x with center offset
+                    currentBotCaptcha.end[0] * 20 + 10     // row to y with center offset
+                ];
+            }
+            botPath = [];
+            isBotDrawing = false;
+            console.log('Bot path reset');
+
+            if (!captcha.maze_image) {
+                console.error('No maze_image in captcha response');
+                showStatus('Error: No maze image received', 'error');
+                return;
+            }
+
+            // Load maze image
+            botMazeImage = new Image();
+            botMazeImage.onload = function() {
+                console.log('Bot maze image loaded, drawing...');
+                drawBotMaze();
+                showStatus('New bot captcha loaded! Bot simulation ready.', 'info');
+            };
+            botMazeImage.onerror = function(error) {
+                console.error('Failed to load bot maze image:', error);
+                showStatus('Error loading bot maze image', 'error');
+            };
+            botMazeImage.src = captcha.maze_image;
+        })
+        .catch(function(error) {
+            console.error('Error loading bot captcha:', error);
+            showStatus('Error loading bot captcha. Please try again.', 'error');
+        });
+}
+
+// Draw human maze
+function drawHumanMaze() {
+    if (!humanCtx) {
+        console.error('Human canvas context is null, cannot draw');
         return;
     }
 
     // Always clear first
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    humanCtx.clearRect(0, 0, humanCanvas.width, humanCanvas.height);
 
-    if (!mazeImage) {
+    if (!humanMazeImage) {
         // Draw placeholder test pattern
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '16px Arial';
-        ctx.fillText('Loading maze...', 150, 200);
+        humanCtx.fillStyle = '#333333';
+        humanCtx.fillRect(0, 0, humanCanvas.width, humanCanvas.height);
+        humanCtx.fillStyle = '#ffffff';
+        humanCtx.font = '16px Arial';
+        humanCtx.fillText('Loading maze...', 150, 200);
         return;
     }
 
     // Draw maze image first (as background)
     try {
-        ctx.drawImage(mazeImage, 0, 0);
+        humanCtx.drawImage(humanMazeImage, 0, 0);
     } catch (error) {
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '12px Arial';
-        ctx.fillText('Maze image failed', 150, 200);
+        humanCtx.fillStyle = '#000000';
+        humanCtx.fillRect(0, 0, humanCanvas.width, humanCanvas.height);
+        humanCtx.fillStyle = '#ffffff';
+        humanCtx.font = '12px Arial';
+        humanCtx.fillText('Maze image failed', 150, 200);
     }
 
-    // Draw user path on top of maze
-    if (userPath.length > 0) {
-        ctx.strokeStyle = '#0066ff';
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
+    // Draw human path on top of maze
+    if (humanPath.length > 0) {
+        humanCtx.strokeStyle = '#0066ff';
+        humanCtx.lineWidth = 4;
+        humanCtx.lineCap = 'round';
+        humanCtx.lineJoin = 'round';
 
-        ctx.beginPath();
-        ctx.moveTo(userPath[0].x, userPath[0].y);
+        humanCtx.beginPath();
+        humanCtx.moveTo(humanPath[0].x, humanPath[0].y);
 
-        for (var i = 1; i < userPath.length; i++) {
-            ctx.lineTo(userPath[i].x, userPath[i].y);
+        for (var i = 1; i < humanPath.length; i++) {
+            humanCtx.lineTo(humanPath[i].x, humanPath[i].y);
         }
 
-        ctx.stroke();
-    }
-
-    // Draw bot path if exists
-    if (typeof botPath !== 'undefined' && botPath.length > 0) {
-        ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.setLineDash([5, 5]);
-
-        var firstPoint = botPath[0];
-
-        if (firstPoint.length >= 2 && firstPoint[0] > 20 && firstPoint[1] > 20) {
-            // Already canvas coordinates, use directly
-            var startX = firstPoint[0];
-            var startY = firstPoint[1];
-
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-
-            for (var i = 1; i < botPath.length; i++) {
-                var x = botPath[i][0];
-                var y = botPath[i][1];
-                ctx.lineTo(x, y);
-            }
-        } else {
-            // Maze coordinates, convert to canvas coordinates
-            var startX = botPath[0][1] * 20 + 20; // col to x with offset
-            var startY = botPath[0][0] * 20 + 20; // row to y with offset
-
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-
-            for (var i = 1; i < botPath.length; i++) {
-                var x = botPath[i][1] * 20 + 20; // col to x with offset
-                var y = botPath[i][0] * 20 + 20; // row to y with offset
-                ctx.lineTo(x, y);
-            }
-        }
-
-        ctx.stroke();
-        ctx.setLineDash([]);
+        humanCtx.stroke();
     }
 }
 
-// Draw start and end indicators
-function drawStartEnd() {
-    if (!currentCaptcha) return;
+// Draw bot maze
+function drawBotMaze() {
+    if (!botCtx) {
+        console.error('Bot canvas context is null, cannot draw');
+        return;
+    }
 
-    ctx.save();
+    // Always clear first
+    botCtx.clearRect(0, 0, botCanvas.width, botCanvas.height);
 
-    // Draw a circle around start
-    ctx.strokeStyle = '#00ff00';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(currentCaptcha.canvas_start[0] + 10, currentCaptcha.canvas_start[1] + 10, 15, 0, 2 * Math.PI);
-    ctx.stroke();
+    if (!botMazeImage) {
+        // Draw placeholder test pattern
+        botCtx.fillStyle = '#333333';
+        botCtx.fillRect(0, 0, botCanvas.width, botCanvas.height);
+        botCtx.fillStyle = '#ffffff';
+        botCtx.font = '16px Arial';
+        botCtx.fillText('Loading maze...', 150, 200);
+        return;
+    }
 
-    // Draw "S" text in start
-    ctx.fillStyle = '#00ff00';
-    ctx.font = 'bold 12px Arial';
-    ctx.fillText('S', currentCaptcha.canvas_start[0] + 6, currentCaptcha.canvas_start[1] + 15);
-
-    // Draw a circle around end
-    ctx.strokeStyle = '#ff0000';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(currentCaptcha.canvas_end[0] + 10, currentCaptcha.canvas_end[1] + 10, 15, 0, 2 * Math.PI);
-    ctx.stroke();
-
-    // Draw "E" text in end
-    ctx.fillStyle = '#ff0000';
-    ctx.fillText('E', currentCaptcha.canvas_end[0] + 6, currentCaptcha.canvas_end[1] + 15);
-
-    ctx.restore();
+    // Draw maze image first (as background)
+    try {
+        botCtx.drawImage(botMazeImage, 0, 0);
+    } catch (error) {
+        botCtx.fillStyle = '#000000';
+        botCtx.fillRect(0, 0, botCanvas.width, botCanvas.height);
+        botCtx.fillStyle = '#ffffff';
+        botCtx.font = '12px Arial';
+        botCtx.fillText('Maze image failed', 150, 200);
+    }
 }
 
-// Initialize canvas events - call this after canvas is ready
+// Initialize canvas events - call this after canvases are ready
 function initializeCanvasEvents() {
-    if (!canvas || !ctx) {
-        console.error('Cannot initialize canvas events - canvas or ctx is null');
+    if (!humanCanvas || !humanCtx) {
+        console.error('Cannot initialize human canvas events - canvas or ctx is null');
+        return;
+    }
+
+    if (!botCanvas || !botCtx) {
+        console.error('Cannot initialize bot canvas events - canvas or ctx is null');
         return;
     }
 
     // Remove existing listeners to avoid duplicates
-    canvas.removeEventListener('mousedown', handleMouseDown);
-    canvas.removeEventListener('mousemove', handleMouseMove);
-    canvas.removeEventListener('mouseup', handleMouseUp);
-    canvas.removeEventListener('mouseleave', handleMouseLeave);
+    humanCanvas.removeEventListener('mousedown', handleHumanMouseDown);
+    humanCanvas.removeEventListener('mousemove', handleHumanMouseMove);
+    humanCanvas.removeEventListener('mouseup', handleHumanMouseUp);
+    humanCanvas.removeEventListener('mouseleave', handleHumanMouseLeave);
 
-    // Add event listeners
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
+    botCanvas.removeEventListener('mousedown', handleBotMouseDown);
+    botCanvas.removeEventListener('mousemove', handleBotMouseMove);
+    botCanvas.removeEventListener('mouseup', handleBotMouseUp);
+    botCanvas.removeEventListener('mouseleave', handleBotMouseLeave);
+
+    // Add event listeners for human
+    humanCanvas.addEventListener('mousedown', handleHumanMouseDown);
+    humanCanvas.addEventListener('mousemove', handleHumanMouseMove);
+    humanCanvas.addEventListener('mouseup', handleHumanMouseUp);
+    humanCanvas.addEventListener('mouseleave', handleHumanMouseLeave);
+
+    // Add event listeners for bot
+    botCanvas.addEventListener('mousedown', handleBotMouseDown);
+    botCanvas.addEventListener('mousemove', handleBotMouseMove);
+    botCanvas.addEventListener('mouseup', handleBotMouseUp);
+    botCanvas.addEventListener('mouseleave', handleBotMouseLeave);
 }
 
-// Mouse event handlers
-function handleMouseDown(e) {
-    if (!currentCaptcha) {
+// Mouse event handlers for human
+function handleHumanMouseDown(e) {
+    if (!currentHumanCaptcha) {
         return;
     }
 
-    if (!canvas || !ctx) {
-        console.error('Canvas not available for mouse events');
+    if (!humanCanvas || !humanCtx) {
+        console.error('Human canvas not available for mouse events');
         return;
     }
 
-    var rect = canvas.getBoundingClientRect();
+    var rect = humanCanvas.getBoundingClientRect();
     var x = Math.floor(e.clientX - rect.left);
     var y = Math.floor(e.clientY - rect.top);
 
     // Clear previous path and start fresh
-    userPath = [{x: x, y: y}];
-    isDrawing = true;
-    drawMaze();
+    humanPath = [{x: x, y: y}];
+    isHumanDrawing = true;
+    drawHumanMaze();
 
     // Start tracking mouse data for this captcha
     fetch('/api/track', {
@@ -274,7 +328,7 @@ function handleMouseDown(e) {
         },
         credentials: 'same-origin',
         body: JSON.stringify({
-            captcha_id: currentCaptcha.captcha_id,
+            captcha_id: currentHumanCaptcha.captcha_id,
             x: x,
             y: y,
             timestamp: Date.now() / 1000,
@@ -285,31 +339,31 @@ function handleMouseDown(e) {
     });
 }
 
-function handleMouseMove(e) {
-    if (!isDrawing) {
+function handleHumanMouseMove(e) {
+    if (!isHumanDrawing) {
         return;
     }
 
-    if (!canvas || !ctx) {
-        console.error('Canvas not available for mouse move');
+    if (!humanCanvas || !humanCtx) {
+        console.error('Human canvas not available for mouse move');
         return;
     }
 
-    var rect = canvas.getBoundingClientRect();
+    var rect = humanCanvas.getBoundingClientRect();
     var x = Math.floor(e.clientX - rect.left);
     var y = Math.floor(e.clientY - rect.top);
 
-    if (userPath.length === 0) {
+    if (humanPath.length === 0) {
         return;
     }
 
-    var lastPoint = userPath[userPath.length - 1];
+    var lastPoint = humanPath[humanPath.length - 1];
     if (Math.abs(x - lastPoint.x) > 3 || Math.abs(y - lastPoint.y) > 3) {
-        userPath.push({x: x, y: y});
-        drawMaze();
+        humanPath.push({x: x, y: y});
+        drawHumanMaze();
 
         // Track mouse movement during drawing
-        if (currentCaptcha && currentCaptcha.captcha_id) {
+        if (currentHumanCaptcha && currentHumanCaptcha.captcha_id) {
             fetch('/api/track', {
                 method: 'POST',
                 headers: {
@@ -317,7 +371,7 @@ function handleMouseMove(e) {
                 },
                 credentials: 'same-origin',
                 body: JSON.stringify({
-                    captcha_id: currentCaptcha.captcha_id,
+                    captcha_id: currentHumanCaptcha.captcha_id,
                     x: x,
                     y: y,
                     timestamp: Date.now() / 1000,
@@ -330,11 +384,11 @@ function handleMouseMove(e) {
     }
 }
 
-function handleMouseUp() {
-    isDrawing = false;
+function handleHumanMouseUp() {
+    isHumanDrawing = false;
 
     // Track mouse up event
-    if (currentCaptcha && currentCaptcha.captcha_id && userPath.length > 0) {
+    if (currentHumanCaptcha && currentHumanCaptcha.captcha_id && humanPath.length > 0) {
         fetch('/api/track', {
             method: 'POST',
             headers: {
@@ -342,9 +396,9 @@ function handleMouseUp() {
             },
             credentials: 'same-origin',
             body: JSON.stringify({
-                captcha_id: currentCaptcha.captcha_id,
-                x: userPath[userPath.length - 1].x,
-                y: userPath[userPath.length - 1].y,
+                captcha_id: currentHumanCaptcha.captcha_id,
+                x: humanPath[humanPath.length - 1].x,
+                y: humanPath[humanPath.length - 1].y,
                 timestamp: Date.now() / 1000,
                 event: 'mouseup'
             })
@@ -354,33 +408,88 @@ function handleMouseUp() {
     }
 }
 
-function handleMouseLeave() {
-    isDrawing = false;
+function handleHumanMouseLeave() {
+    isHumanDrawing = false;
 }
 
-// Clear path
-function clearPath() {
-    userPath = [];
-    botPath = [];
-    isDrawing = false;
-    drawMaze();
-    showStatus('Path cleared. Start drawing from green square.', 'info');
-}
-
-// Verify solution
-function verifySolution() {
-    if (!currentCaptcha) {
-        showStatus('Please load a captcha first.', 'error');
+// Mouse event handlers for bot
+function handleBotMouseDown(e) {
+    if (!currentBotCaptcha) {
         return;
     }
 
-    if (userPath.length < 2) {
-        showStatus('Please draw a path from start to end. Current path: ' + userPath.length + ' points', 'error');
+    if (!botCanvas || !botCtx) {
+        console.error('Bot canvas not available for mouse events');
+        return;
+    }
+
+    var rect = botCanvas.getBoundingClientRect();
+    var x = Math.floor(e.clientX - rect.left);
+    var y = Math.floor(e.clientY - rect.top);
+
+    // Clear previous path and start fresh
+    botPath = [{x: x, y: y}];
+    isBotDrawing = true;
+    drawBotMaze();
+
+    // For bot, we don't track mouse movement here - it's handled in the bot simulation
+}
+
+function handleBotMouseMove(e) {
+    if (!isBotDrawing) {
+        return;
+    }
+
+    if (!botCanvas || !botCtx) {
+        console.error('Bot canvas not available for mouse move');
+        return;
+    }
+
+    var rect = botCanvas.getBoundingClientRect();
+    var x = Math.floor(e.clientX - rect.left);
+    var y = Math.floor(e.clientY - rect.top);
+
+    if (botPath.length === 0) {
+        return;
+    }
+
+    var lastPoint = botPath[botPath.length - 1];
+    if (Math.abs(x - lastPoint.x) > 3 || Math.abs(y - lastPoint.y) > 3) {
+        botPath.push({x: x, y: y});
+        drawBotMaze();
+    }
+}
+
+function handleBotMouseUp() {
+    isBotDrawing = false;
+}
+
+function handleBotMouseLeave() {
+    isBotDrawing = false;
+}
+
+// Clear human path
+function clearHumanPath() {
+    humanPath = [];
+    isHumanDrawing = false;
+    drawHumanMaze();
+    showStatus('Human path cleared. Start drawing from green square.', 'info');
+}
+
+// Verify human solution
+function verifyHumanSolution() {
+    if (!currentHumanCaptcha) {
+        showStatus('Please load a human captcha first.', 'error');
+        return;
+    }
+
+    if (humanPath.length < 2) {
+        showStatus('Please draw a path from start to end. Current path: ' + humanPath.length + ' points', 'error');
         return;
     }
 
     // Convert path to array format for server
-    var pathArray = userPath.map(function(point) {
+    var pathArray = humanPath.map(function(point) {
         var mazeRow = Math.round((point.y - 10) / 20);
         var mazeCol = Math.round((point.x - 10) / 20);
         return [mazeRow, mazeCol];
@@ -393,7 +502,7 @@ function verifySolution() {
         },
         credentials: 'same-origin',
         body: JSON.stringify({
-            captcha_id: currentCaptcha.captcha_id,
+            captcha_id: currentHumanCaptcha.captcha_id,
             path: pathArray
         })
     })
@@ -410,8 +519,8 @@ function verifySolution() {
             showStatus('✅ ' + data.message + ' (Confidence: ' + (data.confidence * 100).toFixed(1) + '%)', 'success');
             updateAnalytics();
             // Clear current captcha after successful verification
-            currentCaptcha = null;
-            userPath = [];
+            currentHumanCaptcha = null;
+            humanPath = [];
         } else {
             showStatus('❌ Error: ' + data.message + ' (Confidence: ' + (data.confidence * 100).toFixed(1) + '%)', 'error');
             updateAnalytics();
@@ -420,7 +529,7 @@ function verifySolution() {
     .catch(function(error) {
         if (error.message.includes('expired') || error.message.includes('refresh')) {
             showStatus('⚠️ CAPTCHA expired. Loading new one...', 'warning');
-            loadNewCaptcha();
+            loadNewHumanCaptcha();
         } else {
             showStatus('Error verifying solution: ' + error.message, 'error');
         }
@@ -430,8 +539,8 @@ function verifySolution() {
 
 // Simulate bot
 function simulateBot() {
-    if (!currentCaptcha) {
-        showStatus('Please load a captcha first.', 'error');
+    if (!currentBotCaptcha) {
+        showStatus('Please load a bot captcha first.', 'error');
         return;
     }
 
@@ -444,7 +553,7 @@ function simulateBot() {
         },
         credentials: 'same-origin',
         body: JSON.stringify({
-            captcha_id: currentCaptcha.captcha_id
+            captcha_id: currentBotCaptcha.captcha_id
         })
     })
     .then(function(response) {
@@ -461,29 +570,9 @@ function simulateBot() {
 
             showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', isHuman ? 'success' : 'error');
 
-            // Update captcha with new data for drawing
-            currentCaptcha = result;
-            // Convert maze coordinates to canvas coordinates
-            if (currentCaptcha.start && currentCaptcha.end) {
-                currentCaptcha.canvas_start = [
-                    currentCaptcha.start[1] * 20 + 10,
-                    currentCaptcha.start[0] * 20 + 10
-                ];
-                currentCaptcha.canvas_end = [
-                    currentCaptcha.end[1] * 20 + 10,
-                    currentCaptcha.end[0] * 20 + 10
-                ];
-            }
-
-            // Draw bot path if available
-            if (result.bot_path && result.bot_path.length > 0) {
-                botPath = result.bot_path;
-
-                mazeImage = new Image();
-                mazeImage.onload = function() {
-                    drawMaze();
-                };
-                mazeImage.src = result.maze_image;
+            // Draw bot path if available (this will be the simulated bot path)
+            if (result.bot_simulation && result.bot_simulation.strategy) {
+                // Bot simulation completed, but we don't draw the path here since it's managed by the backend
             }
         } else if (result.error) {
             showStatus('Bot simulation failed: ' + result.error, 'error');
@@ -638,7 +727,7 @@ function updateAnalytics() {
 
 // Show status message
 function showStatus(message, type) {
-    var statusDiv = document.getElementById('status');
+    var statusDiv = document.getElementById('botStatus');
     statusDiv.textContent = message;
     statusDiv.className = 'status ' + type;
     statusDiv.classList.remove('hidden');
@@ -843,17 +932,22 @@ function initCharts() {
 
 // Initialize page
 window.onload = function() {
-    canvas = document.getElementById('mazeCanvas');
-    if (canvas) {
-        ctx = canvas.getContext('2d');
-    } else {
-        return;
+    humanCanvas = document.getElementById('humanMazeCanvas');
+    botCanvas = document.getElementById('botMazeCanvas');
+    
+    if (humanCanvas) {
+        humanCtx = humanCanvas.getContext('2d');
+    }
+    
+    if (botCanvas) {
+        botCtx = botCanvas.getContext('2d');
     }
 
     initializeCanvasEvents();
 
     initCharts();
-    loadNewCaptcha();
+    loadNewHumanCaptcha();
+    loadNewBotCaptcha();
     updateAnalytics();
 
     setInterval(updateAnalytics, 10000);
@@ -862,22 +956,23 @@ window.onload = function() {
     // setTimeout(testPathDrawing, 2000);
 };
 
-
-
 // Test function to verify canvas works
 function testCanvas() {
-    if (!canvas || !ctx) {
+    if (!humanCanvas || !botCanvas || !humanCtx || !botCtx) {
         return;
     }
 
     try {
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(5, 5, 30, 30);
-        ctx.fillStyle = '#000000';
-        ctx.font = '12px Arial';
-        ctx.fillText('TEST', 10, 25);
+        humanCtx.fillStyle = '#00ff00';
+        humanCtx.fillRect(5, 5, 30, 30);
+        humanCtx.fillStyle = '#000000';
+        humanCtx.font = '12px Arial';
+        humanCtx.fillText('TEST', 10, 25);
+        
+        botCtx.fillStyle = '#ff0000';
+        botCtx.fillRect(5, 5, 30, 30);
+        botCtx.fillStyle = '#000000';
+        botCtx.font = '12px Arial';
+        botCtx.fillText('TEST', 10, 25);
     } catch (error) {}
 }
-
-
-

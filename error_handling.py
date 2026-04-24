@@ -159,6 +159,22 @@ class MazeCaptchaLogger:
                 'database' in str(error).lower() or 
                 'connection' in str(error).lower())
     
+    def info(self, message: str, *args, **kwargs):
+        """Delegate info messages to root logger"""
+        logging.getLogger(__name__).info(message, *args, **kwargs)
+
+    def debug(self, message: str, *args, **kwargs):
+        """Delegate debug messages to root logger"""
+        logging.getLogger(__name__).debug(message, *args, **kwargs)
+
+    def warning(self, message: str, *args, **kwargs):
+        """Delegate warning messages to root logger"""
+        logging.getLogger(__name__).warning(message, *args, **kwargs)
+
+    def error(self, message: str, *args, **kwargs):
+        """Delegate error messages to root logger"""
+        logging.getLogger(__name__).error(message, *args, **kwargs)
+
     def get_error_summary(self) -> Dict[str, Any]:
         """Get summary of all logged errors"""
         return {
@@ -386,7 +402,7 @@ class DatabaseManager:
             conn.commit()
             self.release_connection(conn)
             
-            self.logger.info("Database initialized successfully")
+            logging.getLogger(__name__).info("Database initialized successfully")
             
         except Exception as e:
             self.logger.log_error(e, {'operation': 'initialize_database'})

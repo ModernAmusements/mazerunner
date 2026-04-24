@@ -1,0 +1,34 @@
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant B as Browser
+    participant S as Flask Server
+    participant H as Human Captcha
+    participant Bot as Bot Simulation
+    participant A as Analytics
+    
+    U->>B: Request /api/captcha
+    B->>S: GET /api/captcha
+    S->>H: Generate Maze
+    H->>S: Return Human Captcha Data
+    S->>B: JSON Response with Maze Image
+    
+    U->>B: Draw Human Path
+    B->>S: POST /api/verify
+    S->>H: Validate Path
+    H->>S: Return Verification Result
+    
+    U->>B: Simulate Bot
+    B->>S: POST /api/bot-simulate
+    S->>Bot: Call create_bot()
+    Bot->>S: Return Bot Path Data
+    S->>Bot: Validate Path
+    Bot->>S: Analyze Behavior
+    S->>A: Update Analytics
+    S->>B: Return Bot Detection Result
+    
+    B->>S: GET /api/analytics
+    S->>B: Return Real-time Stats
+    
+    Note over S,B: Decoupled Bot Simulation<br/>Human vs Bot Captchas Side-by-Side
+```

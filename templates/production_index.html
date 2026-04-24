@@ -12,46 +12,74 @@
 </head>
 <body>
     <div class="container">
-        <!-- <header>
-            <h1>Production Maze Captcha System</h1>
-            <div class="subtitle">AI-Powered Bot Detection with Human Behavior Learning</div>
-        </header> -->
-        
         <div class="main-content">
             <section class="section">
                 <h2 class="section-title">Captcha Challenge</h2>
                 
-                <div class="captcha-container">
-                    <canvas id="mazeCanvas" width="220" height="220"></canvas>
-                </div>
-                
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #00ff00;"></div>
-                        <span>Start</span>
+                <div class="captchas-container">
+                    <!-- Human Captcha -->
+                    <div class="captcha-section">
+                        <h3>Human Challenge</h3>
+                        <div class="captcha-container">
+                            <canvas id="humanMazeCanvas" width="220" height="220"></canvas>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #00ff00;"></div>
+                                <span>Start</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff0000;"></div>
+                                <span>End</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #0066ff;"></div>
+                                <span>Your Path</span>
+                            </div>
+                        </div>
+                        <div class="controls">
+                            <button onclick="loadNewHumanCaptcha()">New Human Captcha</button>
+                            <button onclick="clearHumanPath()" class="btn-secondary">Clear Path</button>
+                            <button onclick="verifyHumanSolution()" id="verifyHumanBtn" class="btn-primary">Verify Solution</button>
+                        </div>
+                        <div id="humanStatus" class="status hidden"></div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #ff0000;"></div>
-                        <span>End</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #0066ff;"></div>
-                        <span>Your Path</span>
-                    </div>
-                </div>
-                
-                <div class="controls">
-                    <button onclick="loadNewCaptcha()">New Captcha</button>
-                    <button onclick="clearPath()" class="btn-secondary">Clear Path</button>
-                    <button onclick="verifySolution()" id="verifyBtn" class="btn-primary">Verify Solution</button>
-                    <button onclick="simulateBot()" class="btn-bot">Simulate Bot</button>
-                </div>
-                
 
-                
-                <div id="status" class="status hidden"></div>
+                    <!-- Bot Captcha -->
+                    <div class="captcha-section">
+                        <h3>Bot Challenge</h3>
+                        <div class="captcha-container">
+                            <canvas id="botMazeCanvas" width="220" height="220"></canvas>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #00ff00;"></div>
+                                <span>Start</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff0000;"></div>
+                                <span>End</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff0000;"></div>
+                                <span>Bot Path</span>
+                            </div>
+                        </div>
+                        <div class="controls">
+                            <button onclick="loadNewBotCaptcha()">New Bot Captcha</button>
+                            <button onclick="simulateBot()" class="btn-bot">Simulate Bot</button>
+                        </div>
+                        <div id="botStatus" class="status hidden"></div>
+                    </div>
+                </div>
+
+                <div class="bot-controls">
+                    <h3>Bot Simulation Control</h3>
+                    <button onclick="startBotSimulation()" class="btn-bot">Start Bot Simulation</button>
+                    <button onclick="stopBotSimulation()" class="btn-secondary">Stop Bot Simulation</button>
+                </div>
             </section>
-            
+
             <section class="section">
                 <h2 class="section-title">Real-Time Analytics</h2>
                 
@@ -105,37 +133,58 @@
                     <h3>Learning Progress</h3>
                     <canvas id="learningChart"></canvas>
                 </div>
-</section>
+            </section>
 
-<section class="section">
-    <h2 class="section-title">Advanced Analytics</h2>
-    <div class="grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="chart-container">
-            <h3>Path Length Distribution</h3>
-            <canvas id="pathLengthHistogram"></canvas>
+            <section class="section">
+                <h2 class="section-title">Advanced Analytics</h2>
+                <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="chart-container">
+                        <h3>Path Length Distribution</h3>
+                        <canvas id="pathLengthHistogram"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Confidence Score Distribution</h3>
+                        <canvas id="confidenceHistogram"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>Hourly Activity</h3>
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Recent Activity</h2>
+                <div id="recentEvents" class="recent-events">
+                    <p>No recent events</p>
+                </div>
+            </section>
         </div>
-        <div class="chart-container">
-            <h3>Confidence Score Distribution</h3>
-            <canvas id="confidenceHistogram"></canvas>
-        </div>
-    </div>
-    <div class="chart-container">
-        <h3>Hourly Activity</h3>
-        <canvas id="hourlyChart"></canvas>
-    </div>
-</section>
-        
-        <section class="section">
-            <h2 class="section-title">Recent Activity</h2>
-            <div id="recentEvents" class="recent-events">
-                <p>No recent events</p>
-            </div>
-        </section>
-    </div>
     </div>
 
     <script>
-
+        // Bot simulation state
+        let botSimulationInterval = null;
+        
+        function startBotSimulation() {
+            if (botSimulationInterval) {
+                clearInterval(botSimulationInterval);
+            }
+            
+            botSimulationInterval = setInterval(() => {
+                simulateBot();
+            }, 5000); // Simulate every 5 seconds
+            
+            showStatus('Bot simulation started', 'info');
+        }
+        
+        function stopBotSimulation() {
+            if (botSimulationInterval) {
+                clearInterval(botSimulationInterval);
+                botSimulationInterval = null;
+                showStatus('Bot simulation stopped', 'info');
+            }
+        }
     </script>
 </body>
 </html>

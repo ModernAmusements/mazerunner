@@ -1,0 +1,67 @@
+```mermaid
+graph TD
+    A[User Browser] --> B[Flask Web Server]
+    B --> C[API Endpoint: /api/captcha]
+    B --> D[API Endpoint: /api/bot-simulate]
+    B --> E[API Endpoint: /api/verify]
+    B --> F[API Endpoint: /api/analytics]
+    
+    C --> G[Maze Generation]
+    C --> H[Session Management]
+    C --> I[Human Captcha Data]
+    
+    D --> J[Bot Simulation Engine]
+    D --> K[Path Validation]
+    D --> L[Behavior Analysis]
+    
+    J --> M[create_bot Function]
+    M --> N[Perfect Path Strategy]
+    M --> O[Human-like Strategy]
+    M --> P[Hybrid Strategy]
+    
+    K --> Q[Wall Touches Check]
+    K --> R[Bounds Validation]
+    
+    L --> S[Velocity Analysis]
+    L --> T[Direction Changes]
+    L --> U[Mouse Data Processing]
+    
+    G --> H
+    I --> H
+    
+    H --> V[Session Storage]
+    V --> W[Client Session Data]
+    
+    X[Template: production_index.html] --> Y[Human Captcha Canvas]
+    X --> Z[Bot Captcha Canvas]
+    
+    Y --> AA[Human Path Drawing]
+    Z --> AB[Bot Path Simulation]
+    
+    AC[Analytics System] --> AD[Memory Safety]
+    AC --> AE[Data Limits]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e9
+    style D fill:#ffebee
+    style E fill:#fff3e0
+    style F fill:#f1f8e9
+    style G fill:#c8e6c9
+    style H fill:#bbdefb
+    style I fill:#f3e5f5
+    style J fill:#ffcc80
+    style K fill:#b2ebf2
+    style L fill:#e1bee7
+    style M fill:#c8e6c9
+    style N fill:#a5d6a7
+    style O fill:#81c784
+    style P fill:#66bb6a
+    style V fill:#b39ddb
+    style W fill:#9575cd
+    style X fill:#e0f2f1
+    style Y fill:#b2ebf2
+    style Z fill:#b2ebf2
+    style AA fill:#81c784
+    style AB fill:#ff8a80
+```
