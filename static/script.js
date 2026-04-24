@@ -264,6 +264,34 @@ function drawBotMaze() {
     }
 }
 
+// Draw bot path from simulation results
+function drawBotPath(path) {
+    if (!botCtx || !path || path.length === 0) return;
+
+    // Redraw maze first
+    drawBotMaze();
+
+    // Convert maze coordinates to canvas coordinates and draw path
+    botCtx.strokeStyle = '#ff0000';
+    botCtx.lineWidth = 4;
+    botCtx.lineCap = 'round';
+    botCtx.lineJoin = 'round';
+    botCtx.setLineDash([5, 5]);
+
+    botCtx.beginPath();
+    for (var i = 0; i < path.length; i++) {
+        var x = path[i][1] * 20 + 10;
+        var y = path[i][0] * 20 + 10;
+        if (i === 0) {
+            botCtx.moveTo(x, y);
+        } else {
+            botCtx.lineTo(x, y);
+        }
+    }
+    botCtx.stroke();
+    botCtx.setLineDash([]);
+}
+
 // Initialize canvas events - call this after canvases are ready
 function initializeCanvasEvents() {
     if (!humanCanvas || !humanCtx) {
@@ -570,9 +598,9 @@ function simulateBot() {
 
             showStatus('Bot simulation complete: ' + detected + ' detected (Confidence: ' + confidence + '%)', isHuman ? 'success' : 'error');
 
-            // Draw bot path if available (this will be the simulated bot path)
-            if (result.bot_simulation && result.bot_simulation.strategy) {
-                // Bot simulation completed, but we don't draw the path here since it's managed by the backend
+            // Draw bot path if available
+            if (result.path && result.path.length > 0) {
+                drawBotPath(result.path);
             }
         } else if (result.error) {
             showStatus('Bot simulation failed: ' + result.error, 'error');

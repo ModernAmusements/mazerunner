@@ -3,181 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Maze Captcha System</title>
+    <title>Behavioral Maze CAPTCHA System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
     <script src="/static/script.js"></script>
-    
 </head>
 <body>
-    <div class="container">
-        <div class="main-content">
-            <section class="section">
-                <h2 class="section-title">Captcha Challenge</h2>
-                
-                <div class="captchas-container">
-                    <!-- Human Captcha -->
-                    <div class="captcha-section">
-                        <h3>Human Challenge</h3>
-                        <div class="captcha-container">
-                            <canvas id="humanMazeCanvas" width="220" height="220"></canvas>
-                        </div>
-                        <div class="legend">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #00ff00;"></div>
-                                <span>Start</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #ff0000;"></div>
-                                <span>End</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #0066ff;"></div>
-                                <span>Your Path</span>
-                            </div>
-                        </div>
-                        <div class="controls">
-                            <button onclick="loadNewHumanCaptcha()">New Human Captcha</button>
-                            <button onclick="clearHumanPath()" class="btn-secondary">Clear Path</button>
-                            <button onclick="verifyHumanSolution()" id="verifyHumanBtn" class="btn-primary">Verify Solution</button>
-                        </div>
-                        <div id="humanStatus" class="status hidden"></div>
-                    </div>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">
+            <span class="nav-title">BEHAVIORAL CAPTCHA</span>
+            <span class="nav-subtitle">Bot Detection System</span>
+        </div>
+        <div class="nav-links">
+            <a href="#captcha">CAPTCHA</a>
+            <a href="#analytics">ANALYTICS</a>
+            <a href="#about">ABOUT</a>
+        </div>
+    </nav>
 
-                    <!-- Bot Captcha -->
-                    <div class="captcha-section">
-                        <h3>Bot Challenge</h3>
-                        <div class="captcha-container">
-                            <canvas id="botMazeCanvas" width="220" height="220"></canvas>
-                        </div>
-                        <div class="legend">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #00ff00;"></div>
-                                <span>Start</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #ff0000;"></div>
-                                <span>End</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #ff0000;"></div>
-                                <span>Bot Path</span>
-                            </div>
-                        </div>
-                        <div class="controls">
-                            <button onclick="loadNewBotCaptcha()">New Bot Captcha</button>
-                            <button onclick="simulateBot()" class="btn-bot">Simulate Bot</button>
-                        </div>
-                        <div id="botStatus" class="status hidden"></div>
+    <main class="main">
+        <!-- CAPTCHA Section -->
+        <section id="captcha" class="section">
+            <div class="section-header">
+                <h1 class="section-title">CAPTCHA Challenge</h1>
+                <p class="section-desc">Draw a path from start to end. The system analyzes your behavior to distinguish humans from bots.</p>
+            </div>
+
+            <div class="captcha-grid">
+                <!-- Human Challenge -->
+                <div class="captcha-panel">
+                    <div class="panel-header">
+                        <h2>Human Verification</h2>
+                        <p>Complete the maze to prove you're human</p>
                     </div>
+                    <div class="maze-container">
+                        <canvas id="humanMazeCanvas" width="220" height="220"></canvas>
+                    </div>
+                    <div class="maze-legend">
+                        <span class="legend-item"><span class="dot green"></span> Start</span>
+                        <span class="legend-item"><span class="dot red"></span> End</span>
+                        <span class="legend-item"><span class="dot blue"></span> Your Path</span>
+                    </div>
+                    <div class="panel-controls">
+                        <button onclick="loadNewHumanCaptcha()" class="btn">New Captcha</button>
+                        <button onclick="clearHumanPath()" class="btn btn-outline">Clear</button>
+                        <button onclick="verifyHumanSolution()" class="btn btn-primary">Verify</button>
+                    </div>
+                    <div id="humanStatus" class="status"></div>
                 </div>
 
-                <div class="bot-controls">
-                    <h3>Bot Simulation Control</h3>
-                    <button onclick="startBotSimulation()" class="btn-bot">Start Bot Simulation</button>
-                    <button onclick="stopBotSimulation()" class="btn-secondary">Stop Bot Simulation</button>
+                <!-- Bot Challenge -->
+                <div class="captcha-panel">
+                    <div class="panel-header">
+                        <h2>Bot Simulation</h2>
+                        <p>Automated path generation for testing detection</p>
+                    </div>
+                    <div class="maze-container">
+                        <canvas id="botMazeCanvas" width="220" height="220"></canvas>
+                    </div>
+                    <div class="maze-legend">
+                        <span class="legend-item"><span class="dot green"></span> Start</span>
+                        <span class="legend-item"><span class="dot red"></span> End</span>
+                        <span class="legend-item"><span class="dot bot-red"></span> Bot Path</span>
+                    </div>
+                    <div class="panel-controls">
+                        <button onclick="loadNewBotCaptcha()" class="btn">New Captcha</button>
+                        <button onclick="simulateBot()" class="btn btn-primary">Simulate Bot</button>
+                    </div>
+                    <div class="panel-controls">
+                        <button onclick="startBotSimulation()" class="btn btn-outline">Auto Simulate</button>
+                        <button onclick="stopBotSimulation()" class="btn btn-outline">Stop</button>
+                    </div>
+                    <div id="botStatus" class="status"></div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="section">
-                <h2 class="section-title">Real-Time Analytics</h2>
-                
-                <div class="analytics-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalAttempts">0</div>
-                        <div class="stat-label">Total Attempts</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="successRate">0%</div>
-                        <div class="stat-label">Success Rate</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="botDetected">0</div>
-                        <div class="stat-label">Bots Detected</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="patternsLearned">0</div>
-                        <div class="stat-label">Patterns Learned</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avgSolveTime">0s</div>
-                        <div class="stat-label">Avg Solve Time</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="learnedPatterns">0</div>
-                        <div class="stat-label">Learned Patterns</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="wallTouchTolerance">Max 3+1 per 10 steps</div>
-                        <div class="stat-label">Wall Touch Tolerance</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="sessionCount">0</div>
-                        <div class="stat-label">Active Sessions</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avgConfidence">0%</div>
-                        <div class="stat-label">Avg Confidence</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avgPathLength">0</div>
-                        <div class="stat-label">Avg Path Length</div>
-                    </div>
+        <!-- Analytics Section -->
+        <section id="analytics" class="section">
+            <div class="section-header">
+                <h1 class="section-title">Real-Time Analytics</h1>
+                <p class="section-desc">Monitor detection performance and behavior patterns in real-time.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAttempts">0</div>
+                    <div class="stat-label">Total Attempts</div>
                 </div>
-                
-                <div class="chart-container">
+                <div class="stat-card">
+                    <div class="stat-value" id="botDetected">0</div>
+                    <div class="stat-label">Bots Detected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="successRate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgConfidence">0%</div>
+                    <div class="stat-label">Avg Confidence</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgSolveTime">0s</div>
+                    <div class="stat-label">Avg Solve Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgPathLength">0</div>
+                    <div class="stat-label">Avg Path Length</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Detection Overview</h3>
                     <canvas id="performanceChart"></canvas>
                 </div>
-                <div class="chart-container">
-                    <h3>Learning Progress</h3>
-                    <canvas id="learningChart"></canvas>
+                <div class="chart-card">
+                    <h3>Confidence Distribution</h3>
+                    <canvas id="confidenceHistogram"></canvas>
                 </div>
-            </section>
+            </div>
 
-            <section class="section">
-                <h2 class="section-title">Advanced Analytics</h2>
-                <div class="grid" style="grid-template-columns: 1fr 1fr;">
-                    <div class="chart-container">
-                        <h3>Path Length Distribution</h3>
-                        <canvas id="pathLengthHistogram"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3>Confidence Score Distribution</h3>
-                        <canvas id="confidenceHistogram"></canvas>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <h3>Hourly Activity</h3>
-                    <canvas id="hourlyChart"></canvas>
-                </div>
-            </section>
-
-            <section class="section">
-                <h2 class="section-title">Recent Activity</h2>
+            <div class="activity-card">
+                <h3>Recent Activity</h3>
                 <div id="recentEvents" class="recent-events">
-                    <p>No recent events</p>
+                    <p class="empty-state">No recent activity</p>
                 </div>
-            </section>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="section-header">
+                <h1 class="section-title">About</h1>
+                <p class="section-desc">Technical documentation and system information.</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="info-card">
+                    <h3>How It Works</h3>
+                    <p>The system generates procedural mazes and analyzes user behavior during solving. Bot simulations test the detection accuracy by mimicking human-like and bot-like patterns.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Detection Methods</h3>
+                    <ul>
+                        <li>Solve time analysis</li>
+                        <li>Path precision evaluation</li>
+                        <li>Mouse movement patterns</li>
+                        <li>Behavioral anomaly detection</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>Wall Tolerance</h3>
+                    <p>Maximum 3 wall touches per 10 path steps. Humans naturally make minor errors; bots typically follow perfect paths.</p>
+                </div>
+            </div>
+
+            <div class="tech-info">
+                <h4>Technology Stack</h4>
+                <div class="tech-badges">
+                    <span class="badge">Flask</span>
+                    <span class="badge">OpenCV</span>
+                    <span class="badge">NumPy</span>
+                    <span class="badge">SQLite</span>
+                    <span class="badge">Canvas API</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span>Behavioral Maze CAPTCHA System</span>
+                <span class="footer-version">v1.0</span>
+            </div>
+            <div class="footer-links">
+                <span>Bot Detection Research</span>
+                <span class="separator">|</span>
+                <span>API: /api/captcha</span>
+                <span class="separator">|</span>
+                <span>Server: http://127.0.0.1:8080</span>
+            </div>
         </div>
-    </div>
+    </footer>
 
     <script>
-        // Bot simulation state
         let botSimulationInterval = null;
-        
+
         function startBotSimulation() {
-            if (botSimulationInterval) {
-                clearInterval(botSimulationInterval);
-            }
-            
-            botSimulationInterval = setInterval(() => {
-                simulateBot();
-            }, 5000); // Simulate every 5 seconds
-            
+            if (botSimulationInterval) clearInterval(botSimulationInterval);
+            botSimulationInterval = setInterval(() => simulateBot(), 5000);
             showStatus('Bot simulation started', 'info');
         }
-        
+
         function stopBotSimulation() {
             if (botSimulationInterval) {
                 clearInterval(botSimulationInterval);
